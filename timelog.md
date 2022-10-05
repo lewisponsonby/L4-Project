@@ -15,3 +15,12 @@
 
 * *2 hours* Created presentation for first advisor meeting and researched for project plan
 
+## Week 2
+
+### 04/10/2022
+* *1 hour* Drawn up functional and non-functional requirements in MoSCoW format
+* *1 hour* Experimented with spacy and attempted to setup functioning working environment
+
+### 05/10/2022
+* *1 hour* Set up working environment and began working with DBpedia spotlight and neuralcoref
+
