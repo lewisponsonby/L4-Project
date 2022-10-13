@@ -24,3 +24,14 @@
 ### 05/10/2022
 * *1 hour* Set up working environment and began working with DBpedia spotlight and neuralcoref
 
+### 06/10/2022
+* *1 hour* Experimented with other modules such as neuralcoref & wikidata
+
+### 09/10/2022
+* *1 hour* Planned next supervisor meeting w/ document to be sent ahead of time
+
+## Week 3
+
+### 11/10/2022
+* *1.5 hours* Worked with dbpedia JSON manipulation and experimented with displacy
+
