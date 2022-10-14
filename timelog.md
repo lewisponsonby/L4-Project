@@ -35,3 +35,8 @@
 ### 11/10/2022
 * *1.5 hours* Worked with dbpedia JSON manipulation and experimented with displacy
 
+# 12/10/2022
+* *1 hour* Researched spacy dbpedia spotlight docker and displacy servers
+
+
+
