@@ -18,6 +18,7 @@ from django.urls import path
 from entity_app import views
 
 urlpatterns = [
-    path('', views.index, name='index'),
+    path('home/', views.home, name='home.html'),
+    path('upload/', views.upload, name='upload.html'),
     path('admin/', admin.site.urls),
 ]

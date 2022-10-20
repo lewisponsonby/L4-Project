@@ -1,0 +1,57 @@
+body {
+  font-family: "KoHo";
+  margin: 0px;
+}
+
+.sidenav {
+  height: 100%;
+  width: 192px;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: #454545;
+  overflow-x: hidden;
+  padding-top: 20px;
+}
+
+.sidenav a {
+  padding: 6px 8px 6px 16px;
+  text-decoration: none;
+  font-size: 18px;
+  color: #FFFFFF;
+  display: block;
+}
+
+.sidenav a:hover {
+  color: #f1f1f1;
+}
+
+.main {
+  margin-left: 200px; /* Same as the width of the sidenav */
+  font-size: 22px; /* Increased text to enable scrolling */
+  padding: 0px 10px;
+}
+
+
+.topnav {
+  height: 138px;
+  background-color: #5B5B5B;
+  overflow: hidden;
+}
+
+.topnav a {
+  padding-left: 250px;
+  padding-top: 30px;
+  text-decoration: none;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 48px;
+  color: #FFFFFF;
+  display: block;
+}
+
+
+
+
+
