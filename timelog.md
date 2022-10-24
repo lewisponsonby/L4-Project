@@ -38,5 +38,16 @@
 # 12/10/2022
 * *1 hour* Researched spacy dbpedia spotlight docker and displacy servers
 
+## Week 4
+
+# 17/10/2022
+* *1 hour* Drew up initial wireframes for homepage and upload page
+
+# 18/10/2022
+* *2 hours* Set up django project and app
+
+# 19/10/2022
+* *3 hours* Set up django models and started working on HTML and CSS design
+
 
 

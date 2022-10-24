@@ -19,6 +19,14 @@
 
 <div class="main">
 <p>Tool for helping identify entities</p>
+    <table border="1">
+    {% for document in documents %}
+    <tr>
+        <td>{{document.documentID}}</td>
+        <td>{{document.text}}</td>
+    </tr>
+    {% endfor %}
+</table>
 </div>
 
 </body>

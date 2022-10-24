@@ -3,7 +3,7 @@ import uuid
 # Create your models here.
 class Document(models.Model):
     documentID = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    text = models.TextField()
+    text = models.FileField()
 
 class Entity(models.Model):
     entityID = models.URLField(primary_key=True)
