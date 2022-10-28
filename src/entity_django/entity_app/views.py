@@ -22,8 +22,15 @@ def upload(request):
 def add_document(request):
     if request.method == 'POST':
         file2=request.FILES['file']
-        print(file2)
-        document = Document.objects.create(text=file2)
-        document.save()
-        return HttpResponse("File Uploaded")
+        file = File.objects.create(txtfile=file2)
+        file.save()
+    with file.txtfile.open('r') as f:
+        lines = f.readlines()
+    text=""
+    for line in lines:
+        text+=line.replace("\n"," ")
+    document = Document.objects.create(filename=file2, text=text)
+    document.save()
+
+
     return HttpResponseRedirect(reverse(home))

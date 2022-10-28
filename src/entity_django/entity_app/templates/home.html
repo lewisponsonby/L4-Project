@@ -10,19 +10,19 @@
 <body>
 
 <div class="topnav">
-<a>Sensitivity Detection Tool</a>
+<a href="/home/">Sensitivity Detection Tool</a>
 </div>
 
 <div class="sidenav">
-<button style="padding-left:20px;"><img src="{% static '/upload_button.png' %}" style="width:140px;height:95px;"></button>
+    <a style="padding-left:25px; padding-top:0px;" href="/upload/"><img src="{% static '/upload_button.png' %}" style="width:140px;height:95px;"></a>
 </div>
 
 <div class="main">
-<p>Tool for helping identify entities</p>
+<h1>Tool for helping identify entities</h1>
     <table border="1">
     {% for document in documents %}
     <tr>
-        <td>{{document.documentID}}</td>
+        <td>{{document.filename}}</td>
         <td>{{document.text}}</td>
     </tr>
     {% endfor %}

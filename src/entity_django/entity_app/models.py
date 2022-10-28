@@ -1,9 +1,14 @@
 from django.db import models
 import uuid
 # Create your models here.
+class File(models.Model):
+    fileID = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    txtfile = models.FileField(upload_to='entity_app/static/textfiles/')
+
 class Document(models.Model):
     documentID = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    text = models.FileField()
+    filename = models.TextField()
+    text = models.TextField()
 
 class Entity(models.Model):
     entityID = models.URLField(primary_key=True)
