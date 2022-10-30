@@ -1,3 +1,5 @@
 *.sqlite3
 /src/django
 /src/venv
+/src/entity_django/venv
+/data

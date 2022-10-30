@@ -14,19 +14,15 @@
 </div>
 
 <div class="sidenav">
-    <a style="padding-left:25px; padding-top:0px;" href="/upload/"><img src="{% static '/upload_button.png' %}" style="width:140px;height:95px;"></a>
+    <a href="/upload_document/"><img src="{% static '/upload_button.png' %}" style="width:140px;height:95px;"></a>
+    {% for document in documents %}
+        <a href="/view_document/{{document.documentID}}">{{ document.filename }}</a>
+    {% endfor %}
 </div>
 
 <div class="main">
 <h1>Tool for helping identify entities</h1>
-    <table border="1">
-    {% for document in documents %}
-    <tr>
-        <td>{{document.filename}}</td>
-        <td>{{document.text}}</td>
-    </tr>
-    {% endfor %}
-</table>
+
 </div>
 
 </body>

@@ -19,7 +19,8 @@ from entity_app import views
 
 urlpatterns = [
     path('home/', views.home, name='home.html'),
-    path('upload/', views.upload, name='upload.html'),
-    path('upload/add_document/', views.add_document, name='add_document'),
+    path('upload_document/', views.upload_document, name='upload.html'),
+    path('upload_document/add_document/', views.add_document, name='add_document'),
     path('admin/', admin.site.urls),
+    path('view_document/<str:docid>/', views.view_document, name='docid')
 ]

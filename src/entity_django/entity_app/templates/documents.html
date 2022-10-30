@@ -21,13 +21,12 @@
 </div>
 
 <div class="main">
-<h1>Upload Page</h1>
-<form enctype="multipart/form-data" action="add_document/" method="post" >{% csrf_token %}
-  <input type="file" name="file">
-  <input type="submit">
-</form>
-
-
+    <h1>{{ doc.filename }}</h1>
+    <div class="entitydoc">
+    {% for index in indexed %}
+    <div style="display:inline">{{ index }}</div>
+    {% endfor %}
+    </div>
 </div>
 
 </body>
