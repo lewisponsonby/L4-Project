@@ -24,7 +24,7 @@
     <h1>{{ doc.filename }}</h1>
     <div class="entitydoc">
     {% for index in indexed %}
-    <div style="display:inline">{{ index }}</div>
+    <div style="display:inline">{{ index|linebreaksbr }}</div>
     {% endfor %}
     </div>
 </div>

@@ -15,7 +15,9 @@ def entityTagger(text):
             URL = ent._.dbpedia_raw_result['@URI']
             start = int(ent._.dbpedia_raw_result['@offset'])
             end = int(ent._.dbpedia_raw_result['@offset']) + len(ent._.dbpedia_raw_result['@surfaceForm'])
-            entities.append([URL, start, end])
+            print(URL,float(ent._.dbpedia_raw_result['@similarityScore']))
+            if float(ent._.dbpedia_raw_result['@similarityScore'])>0.99:
+                entities.append([URL, start, end])
         except:
             continue
     return entities

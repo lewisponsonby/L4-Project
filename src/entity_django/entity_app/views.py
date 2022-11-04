@@ -4,6 +4,10 @@ from django.template import loader
 from django.urls import reverse
 from .models import *
 from .EntityTagger import *
+import gzip
+import shutil
+import codecs
+from bs4 import BeautifulSoup
 # Create your views here.
 
 
@@ -41,16 +45,23 @@ def add_document(request):
         file2=request.FILES['file']
         file = File.objects.create(txtfile=file2)
         file.save()
-    with file.txtfile.open('r') as f:
-        lines = f.readlines()
-    text=""
-    for line in lines:
-        text+=line.replace("\n"," ")
+
+    path=str(file.txtfile)
+
+    with open(path, 'rb') as f:
+        lines=f.read()
+
+    soup = BeautifulSoup(lines)
+    text = soup.get_text()
+
+
     try:
         document = Document.objects.get(filename=file2, text=text)
     except:
         document = Document.objects.create(filename=file2, text=text)
+    print("about to analyse")
     analyse_document(document)
+    print("analysed")
     return HttpResponseRedirect(reverse(home))
 
 def analyse_document(document):
@@ -71,6 +82,7 @@ def analyse_document(document):
             instance = Instance.objects.get(documentID=document, entityID=entity, start=start, stop=stop)
         except:
             instance = Instance.objects.create(documentID=document, entityID=entity, start=start, stop=stop)
+    return 1
 
 
 def split_entities(docid,doc):
