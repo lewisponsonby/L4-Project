@@ -22,10 +22,19 @@
 
 <div class="main">
     <h1>{{ doc.filename }}</h1>
-    <div class="entitydoc">
-    {% for index in indexed %}
-    <div style="display:inline">{{ index|linebreaksbr }}</div>
+
+    <div class="tooltip">
+
+    {% for index, abstract in indexed %}
+
+    <div style="display:inline">
+        {{ index|linebreaksbr }}
+        <span class="tooltiptext">{{ abstract }}</span>
+    </div>
+
+
     {% endfor %}
+
     </div>
 </div>
 

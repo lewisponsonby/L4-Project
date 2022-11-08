@@ -10,6 +10,7 @@ nlp.add_pipe('dbpedia_spotlight',last=True)
 def entityTagger(text):
     doc=nlp(text)
     entities = []
+    print("entity tagging started")
     for ent in doc.ents:
         try:
             URL = ent._.dbpedia_raw_result['@URI']
@@ -20,6 +21,7 @@ def entityTagger(text):
                 entities.append([URL, start, end])
         except:
             continue
+    print("entity tagging done")
     return entities
 
 def getAbstract(URL):

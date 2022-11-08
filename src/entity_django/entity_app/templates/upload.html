@@ -23,7 +23,7 @@
 <div class="main">
 <h1>Upload Page</h1>
 <form enctype="multipart/form-data" action="add_document/" method="post" >{% csrf_token %}
-  <input type="file" name="file">
+  <input type="file" name="file" multiple>
   <input type="submit">
 </form>
 

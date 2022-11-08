@@ -56,8 +56,26 @@ h1 { font-size: 24px; }
 }
 
 
-.entitydoc>div:nth-child(even) {
+.tooltip>div:nth-child(even) {
     color: #FF0000;
+    border-bottom: 1px dotted black;
 }
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 400px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    position: absolute;
+    z-index: 1;
+}
+
+.tooltip>div:nth-child(even):hover .tooltiptext {
+    visibility: visible;
+}
+
 
 

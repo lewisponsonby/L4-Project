@@ -42,26 +42,24 @@ def view_document(request, docid):
 
 def add_document(request):
     if request.method == 'POST':
-        file2=request.FILES['file']
-        file = File.objects.create(txtfile=file2)
-        file.save()
-
-    path=str(file.txtfile)
-
-    with open(path, 'rb') as f:
-        lines=f.read()
-
-    soup = BeautifulSoup(lines)
-    text = soup.get_text()
+        print(request.FILES.getlist('file'))
+        for file2 in request.FILES.getlist('file'):
+            file = File.objects.create(txtfile=file2)
+            file.save()
+            path=str(file.txtfile)
+            with gzip.open(path, 'rb') as f:
+                lines=f.read()
+            soup = BeautifulSoup(lines)
+            text = soup.get_text().lower()
 
 
-    try:
-        document = Document.objects.get(filename=file2, text=text)
-    except:
-        document = Document.objects.create(filename=file2, text=text)
-    print("about to analyse")
-    analyse_document(document)
-    print("analysed")
+            try:
+                document = Document.objects.get(filename=file2, text=text)
+            except:
+                document = Document.objects.create(filename=file2, text=text)
+            print("about to analyse")
+            analyse_document(document)
+            print("analysed")
     return HttpResponseRedirect(reverse(home))
 
 def analyse_document(document):
@@ -75,13 +73,18 @@ def analyse_document(document):
         if URL not in all_URLs:
             abstract = getAbstract(URL)
             entity = Entity.objects.create(entityID=URL, abstract=abstract)
+            print("created entity")
             entity.save()
         else:
             entity = Entity.objects.get(entityID=URL)
+            print("got entity")
         try:
             instance = Instance.objects.get(documentID=document, entityID=entity, start=start, stop=stop)
+            print("got instance")
         except:
             instance = Instance.objects.create(documentID=document, entityID=entity, start=start, stop=stop)
+            print("created instance")
+    print("analysing in function done")
     return 1
 
 
@@ -89,13 +92,17 @@ def split_entities(docid,doc):
     instances=Instance.objects.filter(documentID=docid).order_by('start')
     text=doc.text
     indexed=[]
+    abstracts=[]
     prev=0
     for instance in instances:
+        abstracts.append("")
+        abstracts.append(instance.entityID.abstract)
         indexed.append(text[prev:instance.start])
         indexed.append(text[instance.start:instance.stop])
         prev=instance.stop
+    abstracts.append("")
     indexed.append(text[prev:])
-    return indexed
+    return zip(indexed, abstracts)
 
 
 
