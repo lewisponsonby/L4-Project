@@ -19,6 +19,17 @@ def home(request):
     }
     return HttpResponse(template.render(context, request))
 
+def list_documents(request):
+    template = loader.get_template('list_documents.html')
+    documents = Document.objects.all().values()
+    tempfilenames = list(Document.objects.all().values_list('filename', flat=True))
+    filenames = [filename.replace(".html.gz","") for filename in tempfilenames]
+
+    context = {
+        'documents': zip(documents,filenames),
+    }
+    return HttpResponse(template.render(context, request))
+
 def upload_document(request):
     template = loader.get_template('upload.html')
     documents = Document.objects.all().values()

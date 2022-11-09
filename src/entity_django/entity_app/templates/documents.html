@@ -14,10 +14,13 @@
 </div>
 
 <div class="sidenav">
-    <a href="/upload_document/"><img src="{% static '/upload_button.png' %}" style="width:140px;height:95px;"></a>
-    {% for document in documents %}
-        <a href="/view_document/{{document.documentID}}">{{ document.filename }}</a>
-    {% endfor %}
+    <a href="/upload_document/"><img src="{% static '/upload_button.png' %}" style="width:140px;height:95px;padding-bottom:18px;"></a>
+    <div class="btn-group">
+    <a class="button" href="/view_document/">Uploaded Documents</a>
+    <a class="button" href="">Sensitivity Review</a>
+    <a class="button" href="">Document Analytics</a>
+    <a class="button" href="">Corpus Analytics</a>
+    </div>
 </div>
 
 <div class="main">
