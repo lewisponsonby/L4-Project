@@ -27,6 +27,7 @@ def entityTagger(text):
 def getAbstract(URL):
     page = requests.get(URL)
     soup = BeautifulSoup(page.content, 'html.parser')
+    print(soup)
     abstract = soup.find('p', class_="lead").getText()
     return abstract
 
