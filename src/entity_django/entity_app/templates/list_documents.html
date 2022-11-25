@@ -30,9 +30,9 @@
     {% for document,filename in documents %}
         <tr style="border-bottom: 1pt solid #DFDFDF;">
             <td>{{ filename }}</td>
-            <td><i class="material-icons" style="font-size:15px;">data_exploration</i><a href="">Analyse</a></td>
+            <td><i class="material-icons" style="font-size:15px;">data_exploration</i><a href="/document_analytics/{{document.documentID}}">Analyse</a></td>
             <td><i class="material-icons" style="font-size:15px;">search</i><a href="/view_document/{{document.documentID}}">View</a></td>
-            <td><i class="material-icons" style="font-size:15px;">delete</i><a href="">Delete</a></td>
+            <td><i class="material-icons" style="font-size:15px;">delete</i><a href="/delete_document/{{document.documentID}}" onclick="return confirm('Are you sure?')">Delete</a></td>
         </tr>
     {% endfor %}
     </table>

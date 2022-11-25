@@ -36,10 +36,21 @@ body {
 }
 
 h1 {
-    font-size: 24px;
+    font-size: 32px;
+    font-weight:bolder;
     padding-left: 15px;
  }
 
+h2 {
+    font-size: 24px;
+    font-weight:bold;
+    padding-left: 30px;
+    display: inline;
+ }
+
+.tooltip {
+    padding-left: 45px;
+}
 
 .topnav {
   height: 138px;
@@ -60,13 +71,15 @@ h1 {
 
 
 .tooltip>div:nth-child(even) {
-    color: #FF0000;
+    color: #000000;
+    font-weight:bold;
     border-bottom: 1px dotted black;
 }
 
 .tooltip .tooltiptext {
     visibility: hidden;
     width: 400px;
+    font-weight:normal;
     background-color: black;
     color: #fff;
     text-align: center;
@@ -74,6 +87,11 @@ h1 {
     padding: 5px 0;
     position: absolute;
     z-index: 1;
+}
+
+.doc-analyse-link {
+    padding-left: 300px;
+    display: inline;
 }
 
 .tooltip>div:nth-child(even):hover .tooltiptext {

@@ -21,7 +21,9 @@ urlpatterns = [
     path('home/', views.home, name='home.html'),
     path('upload_document/', views.upload_document, name='upload.html'),
     path('upload_document/add_document/', views.add_document, name='add_document'),
+    path('delete_document/<str:docid>/', views.delete_document, name='docid'),
     path('admin/', admin.site.urls),
     path('view_document/', views.list_documents, name='list_documents.html'),
-    path('view_document/<str:docid>/', views.view_document, name='docid')
+    path('view_document/<str:docid>/', views.view_document, name='docid'),
+    path('document_analytics/<str:docid>/', views.document_analytics, name='docid')
 ]

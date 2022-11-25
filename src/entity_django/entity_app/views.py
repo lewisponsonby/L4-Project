@@ -3,6 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
 from django.urls import reverse
 from .models import *
+from .utils import *
 from .EntityTagger import *
 import gzip
 import shutil
@@ -43,13 +44,33 @@ def view_document(request, docid):
     doc = Document.objects.filter(documentID=docid)[0]
     indexed = split_entities(docid,doc)
     template = loader.get_template('documents.html')
+    docname = doc.filename.replace(".html.gz","")
+
     context = {
         'docid': docid,
         'doc': doc,
+        'docname' : docname,
         'indexed' : indexed,
         'documents' : documents,
     }
     return HttpResponse(template.render(context, request))
+
+def document_analytics(request, docid):
+    template = loader.get_template('document_analytics.html')
+    doc = Document.objects.filter(documentID=docid)[0]
+    docname = doc.filename.replace(".html.gz","")
+    chart = get_chart(docid)
+    context = {
+        'docid': docid,
+        'doc' : doc,
+        'docname' : docname,
+        'chart' : chart
+    }
+    return HttpResponse(template.render(context, request))
+
+def delete_document(request, docid):
+    Document.objects.filter(documentID=docid).delete()
+    return HttpResponseRedirect(reverse(home))
 
 def add_document(request):
     if request.method == 'POST':

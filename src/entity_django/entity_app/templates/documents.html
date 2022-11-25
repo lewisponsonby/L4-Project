@@ -5,6 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <link href='https://fonts.googleapis.com/css?family=KoHo' rel='stylesheet'>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <title>Sensitivity Detection Tool</title>
 </head>
 <body>
@@ -24,8 +25,9 @@
 </div>
 
 <div class="main">
-    <h1>{{ doc.filename }}</h1>
-
+    <h1>View Document</h1>
+    <h2>{{ docname }}</h2>
+    <div class="doc-analyse-link"><i class="material-icons" style="font-size:15px;">data_exploration</i><a href="/document_analytics/{{docid}}">Analyse</a></div>
     <div class="tooltip">
 
     {% for index, abstract in indexed %}
@@ -37,7 +39,6 @@
 
 
     {% endfor %}
-
     </div>
 </div>
 
