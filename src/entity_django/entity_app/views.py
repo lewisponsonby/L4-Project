@@ -9,12 +9,32 @@ import gzip
 import shutil
 import codecs
 from bs4 import BeautifulSoup
+from sklearn.feature_extraction.text import TfidfVectorizer
+import pickle
 # Create your views here.
+
 
 
 def home(request):
     template = loader.get_template('home.html')
+#    fitted_model=pickle.load(open('C:/Users/User/OneDrive - University of Glasgow/University Year 4/Individual Project/2464980P-L4-Project/src/entity_django/entity_app/classifier.pkl', 'rb'))
+#    fitted_vectorizer=pickle.load(open('C:/Users/User/OneDrive - University of Glasgow/University Year 4/Individual Project/2464980P-L4-Project/src/entity_django/entity_app/vectorizer.pkl', 'rb'))
+
     documents = Document.objects.all().values()
+    entities = Entity.objects.all()
+
+#    for entity in entities:
+#        test_feature=fitted_vectorizer.transform([entity.abstract])
+#        predicted=fitted_model.predict_proba(test_feature)
+#        print(predicted[0])
+#        if predicted[0][1]<0.5:
+#            entity.sensitivity=1
+#        elif 0.5<=predicted[0][1]<0.8:
+#            entity.sensitivity=2
+#        elif predicted[0][1]>=0.8:
+#            entity.sensitivity=3
+#        entity.save()
+
     context = {
         'documents': documents,
     }
@@ -95,6 +115,9 @@ def add_document(request):
     return HttpResponseRedirect(reverse(home))
 
 def analyse_document(document):
+    fitted_model=pickle.load(open('C:/Users/User/OneDrive - University of Glasgow/University Year 4/Individual Project/2464980P-L4-Project/src/entity_django/entity_app/classifier.pkl', 'rb'))
+    fitted_vectorizer=pickle.load(open('C:/Users/User/OneDrive - University of Glasgow/University Year 4/Individual Project/2464980P-L4-Project/src/entity_django/entity_app/vectorizer.pkl', 'rb'))
+
     entities=entityTagger(document.text)
     documentID=document.documentID
     for entity_instance in entities:
@@ -105,6 +128,14 @@ def analyse_document(document):
         if URL not in all_URLs:
             abstract = getAbstract(URL)
             entity = Entity.objects.create(entityID=URL, abstract=abstract)
+            test_feature=fitted_vectorizer.transform([entity.abstract])
+            predicted=fitted_model.predict_proba(test_feature)
+            if predicted[0][1]<0.5:
+                entity.sensitivity=1
+            elif 0.5<=predicted[0][1]<0.8:
+                entity.sensitivity=2
+            elif predicted[0][1]>=0.8:
+                entity.sensitivity=3
             print("created entity")
             entity.save()
         else:
@@ -125,16 +156,19 @@ def split_entities(docid,doc):
     text=doc.text
     indexed=[]
     abstracts=[]
+    colors=[]
     prev=0
     for instance in instances:
         abstracts.append("")
         abstracts.append(instance.entityID.abstract)
+        colors.append(0)
+        colors.append(instance.entityID.sensitivity)
         indexed.append(text[prev:instance.start])
         indexed.append(text[instance.start:instance.stop])
         prev=instance.stop
     abstracts.append("")
     indexed.append(text[prev:])
-    return zip(indexed, abstracts)
+    return zip(indexed, abstracts, colors)
 
 
 

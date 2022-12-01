@@ -27,15 +27,34 @@
 <div class="main">
     <h1>View Document</h1>
     <h2>{{ docname }}</h2>
-    <div class="doc-analyse-link"><i class="material-icons" style="font-size:15px;">data_exploration</i><a href="/document_analytics/{{docid}}">Analyse</a></div>
+    <div class="doc-analyse-link">
+        <i class="material-icons" style="font-size:15px;">data_exploration</i><a href="/document_analytics/{{docid}}">Analyse Document</a>
+        <i class="material-icons" style="font-size:15px;">delete</i><a href="/delete_document/{{docid}}" onclick="return confirm('Are you sure?')">Delete Document</a>
+    </div>
     <div class="tooltip">
 
-    {% for index, abstract in indexed %}
-
-    <div style="display:inline">
-        {{ index|linebreaksbr }}
-        <span class="tooltiptext">{{ abstract }}</span>
-    </div>
+    {% for index, abstract, color in indexed %}
+        {% if color == 0  %}
+        <div style="display:inline">
+            {{ index|linebreaksbr }}
+            <span class="tooltiptext">{{ abstract }}</span>
+        </div>
+        {% elif color == 1  %}
+        <div style="display:inline; color:#255c00;">
+            {{ index|linebreaksbr }}
+            <span class="tooltiptext" style="background-color: #255c00">{{ abstract }}</span>
+        </div>
+        {% elif color == 2  %}
+        <div style="display:inline; color:#825500;">
+            {{ index|linebreaksbr }}
+            <span class="tooltiptext" style="background-color: #825500">{{ abstract }}</span>
+        </div>
+        {% elif color == 3  %}
+        <div style="display:inline; color:#b50000;">
+            {{ index|linebreaksbr }}
+            <span class="tooltiptext" style="background-color: #b50000">{{ abstract }}</span>
+        </div>
+        {% endif %}
 
 
     {% endfor %}

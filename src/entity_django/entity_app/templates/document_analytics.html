@@ -5,6 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <link href='https://fonts.googleapis.com/css?family=KoHo' rel='stylesheet'>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <title>Sensitivity Detection Tool</title>
 </head>
 <body>
@@ -25,7 +26,12 @@
 
 <div class="main">
     <h1>Document Analytics</h1>
-    <h2>{{ docname }}</h2><br>
+    <h2>{{ docname }}</h2>
+    <div class="doc-analyse-link">
+        <i class="material-icons" style="font-size:15px;">search</i><a href="/view_document/{{docid}}">View Document</a>
+        <i class="material-icons" style="font-size:15px;">delete</i><a href="/delete_document/{{docid}}" onclick="return confirm('Are you sure?')">Delete Document</a>
+    </div>
+    <br>
     <img src="data:image/png;base64, {{chart}}" alt="" id="img">
 </div>
 

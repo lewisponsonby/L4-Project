@@ -19,12 +19,27 @@ def get_graph():
 def get_chart(docid):
     instances = Instance.objects.filter(documentID=docid)
     entities=[]
+    colors={}
     for instance in instances:
-        entities.append(str(instance.entityID).split(" ")[2].replace('http://dbpedia.org/resource/','').replace('(','').replace(')','').replace('_','\n'))
-    counter=dict(Counter(entities).most_common(5))
+        entity_name=str(instance.entityID).split(" ")[2].replace('http://dbpedia.org/resource/','').replace('(','').replace(')','').replace('_','\n')
+        entities.append(entity_name)
+        colors[entity_name]=instance.entityID.sensitivity
+
+
+    counter=dict(Counter(entities).most_common(7))
+    color = [colors[key] for key in counter.keys()]
+    for i in range(len(color)):
+        if color[i]==1:
+            color[i]='#04BD00'
+
+        if color[i]==2:
+            color[i]='#FFC517'
+
+        if color[i]==3:
+            color[i]='#DF0000'
     plt.switch_backend('AGG')
     fig = plt.figure(figsize=(5,4))
-    plt.bar(counter.keys(),counter.values(), color=['#442288', '#FED23F', '#EB7D5B', '#6CA2EA','#B5D33D'])
+    plt.bar(counter.keys(),counter.values(), color=color)
     plt.xticks(rotation=45)
     plt.title('Most Common Entities')
     plt.ylabel('Frequency')

@@ -13,6 +13,7 @@ class Document(models.Model):
 class Entity(models.Model):
     entityID = models.URLField(primary_key=True)
     abstract = models.TextField()
+    sensitivity = models.IntegerField(default=0, editable=True)
 
 class Instance(models.Model):
     instanceID = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
