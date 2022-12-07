@@ -10,18 +10,17 @@ body {
   z-index: 1;
   top: 0;
   left: 0;
-  background-color: #454545;
+  background-color: #320036;
   overflow-x: hidden;
   padding-top: 20px;
 }
 
 .sidenav a {
-  padding: 0px 0px 0px 0px;
-  text-decoration: none;
   font-size: 18px;
   color: #FFFFFF;
   display: block;
   text-align: center;
+
 }
 
 .sidenav a:hover {
@@ -29,25 +28,51 @@ body {
 }
 
 .main {
-  margin-left: 200px; /* Same as the width of the sidenav */
-   /* Increased text to enable scrolling */
+  margin-left: 200px;
   padding: 0px 0px;
-
+  font-size: 18px;
 }
 
 h1 {
-    font-size: 32px;
+    font-size: 36px;
     font-weight:bolder;
     padding-left: 15px;
  }
 
 h2 {
-    font-size: 24px;
+    font-size: 28px;
     font-weight:bold;
     padding-left: 30px;
     display: inline;
  }
 
+ p {
+    padding-left:15px;
+    padding-right:192px;
+ }
+
+.split {
+  height: 100%;
+  width: 50%;
+
+  top: 0;
+  overflow: hidden;
+}
+
+/* Control the left side */
+.left {
+  left: 0;
+  float: left;
+  z-index: 1;
+}
+
+/* Control the right side */
+.right {
+  right: 0;
+  float: right;
+  padding-top: 120px;
+  z-index: 0;
+}
 
 .tooltip {
     padding-left: 45px;
@@ -55,21 +80,23 @@ h2 {
 
 .topnav {
   height: 138px;
-  background-color: #5B5B5B;
+  background-color: #4c0052;
   overflow: hidden;
+  z-index: 2;
 }
 
 .topnav a {
-  padding-left: 250px;
+  text-align: center;
   padding-top: 30px;
+  padding-right: 192px;
   text-decoration: none;
   font-style: normal;
   font-weight: 700;
   font-size: 48px;
   color: #FFFFFF;
   display: block;
+  z-index: 3;
 }
-
 
 .tooltip>div:nth-child(even) {
     color: #000000;
@@ -91,7 +118,7 @@ h2 {
 }
 
 .doc-analyse-link {
-    padding-left: 250px;
+    padding-left: 120px;
     display: inline;
 }
 
@@ -100,8 +127,8 @@ h2 {
 }
 
 .sidenav .btn-group .button {
-  background-color: #454545;
-  border: 1px solid #5B5B5B;
+  background-color: #320036;
+  border: 1px solid #4c0052;
   color: white;
   cursor: pointer;
   padding-top: 30px;
@@ -115,7 +142,7 @@ h2 {
 }
 
 .sidenav .btn-group .button:hover {
-  background-color: #5B5B5B;
+  background-color: #4c0052;
 }
 
  td {

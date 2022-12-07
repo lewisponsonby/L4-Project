@@ -25,5 +25,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('view_document/', views.list_documents, name='list_documents.html'),
     path('view_document/<str:docid>/', views.view_document, name='docid'),
+    path('view_document/<str:docid>/<str:instid>/', views.view_document, name='documents.html'),
     path('document_analytics/<str:docid>/', views.document_analytics, name='docid')
 ]

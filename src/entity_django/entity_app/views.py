@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.template import loader
 from django.urls import reverse
+from django.db.models.functions import Length
 from .models import *
 from .utils import *
 from .EntityTagger import *
@@ -59,19 +60,29 @@ def upload_document(request):
     }
     return HttpResponse(template.render(context, request))
 
-def view_document(request, docid):
+def view_document(request, docid, instid=""):
     documents = Document.objects.all().values()
     doc = Document.objects.filter(documentID=docid)[0]
     indexed = split_entities(docid,doc)
     template = loader.get_template('documents.html')
     docname = doc.filename.replace(".html.gz","")
+    chart = get_chart(docid)
+    try:
+        inst_ent = Instance.objects.filter(instanceID=instid)[0].entityID
+        similar_docs = list(set(Instance.objects.filter(entityID=inst_ent).values_list('documentID', flat=True)))
+        similar_docs = [Document.objects.filter(documentID=docid)[0] for docid in similar_docs]
+    except:
+        similar_docs = []
+    print(similar_docs)
 
     context = {
         'docid': docid,
         'doc': doc,
+        'chart': chart,
         'docname' : docname,
         'indexed' : indexed,
         'documents' : documents,
+        'similar_docs' : similar_docs,
     }
     return HttpResponse(template.render(context, request))
 
@@ -157,8 +168,11 @@ def split_entities(docid,doc):
     indexed=[]
     abstracts=[]
     colors=[]
+    inst_ids=[]
     prev=0
     for instance in instances:
+        inst_ids.append("")
+        inst_ids.append(str(instance).split(" ")[-1].replace("(","").replace(")",""))
         abstracts.append("")
         abstracts.append(instance.entityID.abstract)
         colors.append(0)
@@ -166,9 +180,10 @@ def split_entities(docid,doc):
         indexed.append(text[prev:instance.start])
         indexed.append(text[instance.start:instance.stop])
         prev=instance.stop
+    inst_ids.append("")
     abstracts.append("")
     indexed.append(text[prev:])
-    return zip(indexed, abstracts, colors)
+    return zip(indexed, abstracts, colors, inst_ids)
 
 
 

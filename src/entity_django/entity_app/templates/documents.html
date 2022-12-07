@@ -25,15 +25,16 @@
 </div>
 
 <div class="main">
+    <div class="split left">
     <h1>View Document</h1>
     <h2>{{ docname }}</h2>
     <div class="doc-analyse-link">
-        <i class="material-icons" style="font-size:15px;">data_exploration</i><a href="/document_analytics/{{docid}}">Analyse Document</a>
         <i class="material-icons" style="font-size:15px;">delete</i><a href="/delete_document/{{docid}}" onclick="return confirm('Are you sure?')">Delete Document</a>
     </div>
+
     <div class="tooltip">
 
-    {% for index, abstract, color in indexed %}
+    {% for index, abstract, color, instid in indexed %}
         {% if color == 0  %}
         <div style="display:inline">
             {{ index|linebreaksbr }}
@@ -41,23 +42,33 @@
         </div>
         {% elif color == 1  %}
         <div style="display:inline; color:#255c00;">
-            {{ index|linebreaksbr }}
-            <span class="tooltiptext" style="background-color: #255c00">{{ abstract }}</span>
+            <span onclick="window.location='/view_document/{{docid}}/{{instid}}'">{{ index|linebreaksbr }}</span>
+            <span class="tooltiptext" style="background-color: #255c00" href="aaaa">{{ abstract }}</span>
         </div>
         {% elif color == 2  %}
         <div style="display:inline; color:#825500;">
-            {{ index|linebreaksbr }}
+            <span onclick="window.location='/view_document/{{docid}}/{{instid}}'">{{ index|linebreaksbr }}</span>
             <span class="tooltiptext" style="background-color: #825500">{{ abstract }}</span>
         </div>
         {% elif color == 3  %}
         <div style="display:inline; color:#b50000;">
-            {{ index|linebreaksbr }}
+            <span onclick="window.location='/view_document/{{docid}}/{{instid}}'">{{ index|linebreaksbr }}</span>
             <span class="tooltiptext" style="background-color: #b50000">{{ abstract }}</span>
         </div>
         {% endif %}
 
 
     {% endfor %}
+    </div>
+    </div>
+    <div class="split right">
+        <img src="data:image/png;base64, {{chart}}" alt="" id="img"><br>
+
+        {% for doc in similar_docs %}
+            <td style="padding-right: 20px;">{{ doc.filename }}</td>
+            <td><i class="material-icons" style="font-size:15px">search</i><a href="/view_document/{{doc.documentID}}">View</a></td><br>
+        </tr>
+        {% endfor %}
     </div>
 </div>
 
