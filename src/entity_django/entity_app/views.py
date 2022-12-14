@@ -71,8 +71,13 @@ def view_document(request, docid, instid=""):
         inst_ent = Instance.objects.filter(instanceID=instid)[0].entityID
         similar_docs = list(set(Instance.objects.filter(entityID=inst_ent).values_list('documentID', flat=True)))
         similar_docs = [Document.objects.filter(documentID=docid)[0] for docid in similar_docs]
+        similar_docids = [doc.documentID for doc in similar_docs]
+        similar_docnames = [str(doc.filename).replace(".html.gz","") for doc in similar_docs]
+        similar_docs = zip(similar_docids,similar_docnames)
+        ent_name = str(inst_ent.entityID).split("/")[-1].replace('_', ' ')
     except:
         similar_docs = []
+        ent_name=""
     print(similar_docs)
 
     context = {
@@ -83,6 +88,7 @@ def view_document(request, docid, instid=""):
         'indexed' : indexed,
         'documents' : documents,
         'similar_docs' : similar_docs,
+        'ent_name': ent_name,
     }
     return HttpResponse(template.render(context, request))
 

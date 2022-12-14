@@ -41,7 +41,7 @@ def get_chart(docid):
     fig = plt.figure(figsize=(5,4))
     plt.bar(counter.keys(),counter.values(), color=color)
     plt.xticks(rotation=45)
-    plt.title('Most Common Entities')
+    plt.title('Most Frequent Entities')
     plt.ylabel('Frequency')
     plt.tight_layout()
     chart = get_graph()

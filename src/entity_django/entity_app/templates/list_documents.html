@@ -18,15 +18,14 @@
     <a href="/upload_document/"><img src="{% static '/upload_button.png' %}" style="width:140px;height:95px;padding-bottom:18px;"></a>
     <div class="btn-group">
     <a class="button" href="/view_document/">Uploaded Documents</a>
-    <a class="button" href="">Sensitivity Review</a>
-    <a class="button" href="">Document Analytics</a>
+
     <a class="button" href="">Corpus Analytics</a>
     </div>
 </div>
 
 <div class="main">
     <h1>Uploaded Documents</h1>
-    <table style="border-collapse: collapse;">
+    <table style="border-collapse: collapse; ">
     {% for document,filename in documents %}
         <tr style="border-bottom: 1pt solid #DFDFDF;">
             <td style="padding-right: 600px;">{{ filename }}</td>

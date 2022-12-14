@@ -18,8 +18,6 @@
     <a href="/upload_document/"><img src="{% static '/upload_button.png' %}" style="width:140px;height:95px;padding-bottom:18px;"></a>
     <div class="btn-group">
     <a class="button" href="/view_document/">Uploaded Documents</a>
-    <a class="button" href="">Sensitivity Review</a>
-    <a class="button" href="">Document Analytics</a>
     <a class="button" href="">Corpus Analytics</a>
     </div>
 </div>
@@ -41,17 +39,17 @@
             <span class="tooltiptext">{{ abstract }}</span>
         </div>
         {% elif color == 1  %}
-        <div style="display:inline; color:#255c00;">
+        <div style="display:inline; color:#255c00; background-color: #afffa3;">
             <span onclick="window.location='/view_document/{{docid}}/{{instid}}'">{{ index|linebreaksbr }}</span>
             <span class="tooltiptext" style="background-color: #255c00" href="aaaa">{{ abstract }}</span>
         </div>
         {% elif color == 2  %}
-        <div style="display:inline; color:#825500;">
+        <div style="display:inline; color:#825500; background-color: #ffdda3">
             <span onclick="window.location='/view_document/{{docid}}/{{instid}}'">{{ index|linebreaksbr }}</span>
             <span class="tooltiptext" style="background-color: #825500">{{ abstract }}</span>
         </div>
         {% elif color == 3  %}
-        <div style="display:inline; color:#b50000;">
+        <div style="display:inline; color:#b50000; background-color: #ffa3b3">
             <span onclick="window.location='/view_document/{{docid}}/{{instid}}'">{{ index|linebreaksbr }}</span>
             <span class="tooltiptext" style="background-color: #b50000">{{ abstract }}</span>
         </div>
@@ -59,16 +57,27 @@
 
 
     {% endfor %}
+
     </div>
+
     </div>
+
     <div class="split right">
         <img src="data:image/png;base64, {{chart}}" alt="" id="img"><br>
+        <div style="padding-left: 60px;">
+        {% if ent_name %}
+            <h3 >Documents containing {{ent_name}}</h3>
+        {% endif %}
+        <table style="border-collapse: collapse;">
 
-        {% for doc in similar_docs %}
-            <td style="padding-right: 20px;">{{ doc.filename }}</td>
-            <td><i class="material-icons" style="font-size:15px">search</i><a href="/view_document/{{doc.documentID}}">View</a></td><br>
-        </tr>
+        {% for docid, docname in similar_docs %}
+            <tr style="border-bottom: 1pt solid #DFDFDF;">
+            <td>{{ docname }}</td>
+            <td style="padding-left: 70px;"><i class="material-icons" style="font-size:15px">search</i><a href="/view_document/{{docid}}">View</a></td>
+            </tr>
         {% endfor %}
+        </table>
+        </div>
     </div>
 </div>
 
