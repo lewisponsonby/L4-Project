@@ -5,6 +5,9 @@ from matplotlib import pyplot as plt
 import matplotlib
 from collections import Counter
 import numpy as np
+from matplotlib import pyplot as plt
+from wordcloud import WordCloud, STOPWORDS
+import matplotlib.colors as mcolors
 
 def get_graph():
     buffer = BytesIO()
@@ -15,6 +18,37 @@ def get_graph():
     graph = graph.decode('utf-8')
     buffer.close()
     return graph
+
+
+def get_wordcloud(topics):
+    cols = [color for name, color in list(mcolors.CSS4_COLORS.items())[22:38]]
+
+    cloud = WordCloud(background_color='white',
+                      width=2500,
+                      height=2500,
+                      max_words=20,
+                      colormap='tab10',
+                      color_func=lambda *args, **kwargs: cols[i],
+                      prefer_horizontal=1.0)
+
+    fig, axes = plt.subplots(4, 2, figsize=(12, 12), sharex=True, sharey=True)
+
+    for i, ax in enumerate(axes.flatten()):
+        fig.add_subplot(ax)
+        topic_words = dict(topics[i][1])
+        cloud.generate_from_frequencies(topic_words, max_font_size=300)
+        plt.gca().imshow(cloud)
+        plt.gca().set_title('Topic ' + str(i+1), fontdict=dict(size=16))
+        plt.gca().axis('off')
+
+    plt.subplots_adjust(wspace=0, hspace=0)
+    plt.axis('off')
+    plt.margins(x=0, y=0)
+    plt.tight_layout()
+    chart = get_graph()
+    return chart
+
+
 
 def get_chart(docid):
     instances = Instance.objects.filter(documentID=docid)

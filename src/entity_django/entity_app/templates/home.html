@@ -5,20 +5,29 @@
 <head>
     <meta charset="UTF-8">
     <link href='https://fonts.googleapis.com/css?family=KoHo' rel='stylesheet'>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <title>Sensitivity Detection Tool</title>
 </head>
 <body>
 
-<div class="topnav">
-<a href="/home/">Sensitivity Detection Tool</a>
-</div>
+
 
 <div class="sidenav">
-    <a href="/upload_document/"><img src="{% static '/upload_button.png' %}" style="width:140px;height:95px;padding-bottom:18px;"></a>
+        <div onclick="history.back()" style="width: 60%; margin: 0px auto; padding-top: 15px;">
+        <div style="background-color: #4c0052; border-radius: 10px;">
+            <i class="material-icons" style="font-size:100px; color: white">arrow_back</i>
+            </div>
+        </div>
     <div class="btn-group">
-    <a class="button" href="/view_document/">Uploaded Documents</a>
-    <a class="button" href="">Corpus Analytics</a>
+        <a class="button" href="/home/">Homepage</a>
+        <a class="button" href="/upload_document/">Upload Documents</a>
+        <a class="button" href="/view_document/">View Documents</a>
+        <a class="button" href="/corpus_analytics">Corpus Analytics</a>
     </div>
+</div>
+
+<div class="topnav">
+<a href="/home/">Sensitivity Detection Tool</a>
 </div>
 
 <div class="main">
@@ -32,6 +41,7 @@
 
 <h1>Suggested Use</h1>
     <p> </p>
+    <img src="data:image/png;base64, {{wordcloud}}" alt="" id="img"><br>
 </div>
 
 </body>

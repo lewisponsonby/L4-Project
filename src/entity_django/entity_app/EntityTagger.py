@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 import requests
 
 nlp = spacy.load('en_core_web_lg')
-nlp.add_pipe('dbpedia_spotlight',last=True)
+nlp.add_pipe('dbpedia_spotlight', config={'dbpedia_rest_endpoint': 'http://localhost:2222/rest'})
 
 def entityTagger(text):
     doc=nlp(text)
@@ -27,7 +27,6 @@ def entityTagger(text):
 def getAbstract(URL):
     page = requests.get(URL)
     soup = BeautifulSoup(page.content, 'html.parser')
-    print(soup)
     abstract = soup.find('p', class_="lead").getText()
     return abstract
 

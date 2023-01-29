@@ -10,27 +10,75 @@
 </head>
 <body>
 
-<div class="topnav">
-<a href="/home/">Sensitivity Detection Tool</a>
-</div>
+
 
 <div class="sidenav">
-    <a href="/upload_document/"><img src="{% static '/upload_button.png' %}" style="width:140px;height:95px;padding-bottom:18px;"></a>
+        <div onclick="history.back()" style="width: 60%; margin: 0px auto; padding-top: 15px;">
+        <div style="background-color: #4c0052; border-radius: 10px;">
+            <i class="material-icons" style="font-size:100px; color: white">arrow_back</i>
+            </div>
+        </div>
     <div class="btn-group">
-    <a class="button" href="/view_document/">Uploaded Documents</a>
-
-    <a class="button" href="">Corpus Analytics</a>
+        <a class="button" href="/home/">Homepage</a>
+        <a class="button" href="/upload_document/">Upload Documents</a>
+        <a class="button" href="/view_document/">View Documents</a>
+        <a class="button" href="/corpus_analytics">Corpus Analytics</a>
     </div>
+</div>
+
+<div class="topnav">
+<a href="/home/">Sensitivity Detection Tool</a>
 </div>
 
 <div class="main">
     <h1>Uploaded Documents</h1>
     <table style="border-collapse: collapse; ">
-    {% for document,filename in documents %}
+
+    {% for document,filename,top_entities in documents %}
         <tr style="border-bottom: 1pt solid #DFDFDF;">
-            <td style="padding-right: 600px;">{{ filename }}</td>
-            <td><i class="material-icons" style="font-size:15px;">search</i><a href="/view_document/{{document.documentID}}">View</a></td>
-            <td><i class="material-icons" style="font-size:15px;">delete</i><a href="/delete_document/{{document.documentID}}" onclick="return confirm('Are you sure?')">Delete</a></td>
+            <td style="padding-right: 50px;">{{ filename }}</td>
+
+
+            <td>
+                {% for entity, ent_url in top_entities %}
+                    {% if entity.sensitivity == 0  %}
+                    <div>
+                        {{entity.text}}
+                    </div>
+                    {% elif entity.sensitivity == 1  %}
+                    <div class="sensitivity1" onclick="window.location='/view_entity/{{ent_url}}'">
+                        {{entity.text}}
+                    </div>
+                    {% elif entity.sensitivity == 2  %}
+                    <div class="sensitivity2"  onclick="window.location='/view_entity/{{ent_url}}'">
+                          {{entity.text}}
+                    </div>
+                    {% elif entity.sensitivity == 3  %}
+                    <div class="sensitivity3"  onclick="window.location='/view_entity/{{ent_url}}'">
+                        {{entity.text}}
+                    </div>
+                    {% endif %}
+                    <div style="padding-right: 5px; display: inline;"></div>
+                {% endfor %}
+            </td>
+
+
+            <td>
+            <a href="/view_document/{{document.documentID}}">
+                <button class="document-button-icon">
+                    <i class="material-icons" style="font-size:15px;">search</i>
+                </button>
+            </a>
+            </td>
+
+            <td>
+            <a href="/delete_document/{{document.documentID}}" onclick="return confirm('Are you sure?')">
+                <button class="document-button-icon">
+                    <i class="material-icons" style="font-size:15px;">delete</i>
+                </button>
+            </a>
+            </td>
+
         </tr>
     {% endfor %}
     </table>

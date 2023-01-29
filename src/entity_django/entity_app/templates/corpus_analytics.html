@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+{% load static %}
+<link rel="stylesheet" href="{% static 'styles.css' %}">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link href='https://fonts.googleapis.com/css?family=KoHo' rel='stylesheet'>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <title>Sensitivity Detection Tool</title>
+</head>
+<body>
+
+
+
+<div class="sidenav">
+        <div onclick="history.back()" style="width: 60%; margin: 0px auto; padding-top: 15px;">
+        <div style="background-color: #4c0052; border-radius: 10px;">
+            <i class="material-icons" style="font-size:100px; color: white">arrow_back</i>
+            </div>
+        </div>
+    <div class="btn-group">
+        <a class="button" href="/home/">Homepage</a>
+        <a class="button" href="/upload_document/">Upload Documents</a>
+        <a class="button" href="/view_document/">View Documents</a>
+        <a class="button" href="/corpus_analytics">Corpus Analytics</a>
+    </div>
+</div>
+
+<div class="topnav">
+<a href="/home/">Sensitivity Detection Tool</a>
+</div>
+
+<div class="main">
+<h1>Corpus Analytics</h1>
+    <h2>LDA Topic Modelling</h2><br>
+
+
+        <table style="border-collapse: collapse;">
+            {% for topic in topics %}
+                <tr>
+                    <th>Topic {{forloop.counter}} - Sensitivity: xyz%</th>
+                </tr>
+
+                <tr>
+                    <th style="float: left;">Entity</th>
+                    <th>Weighting</th>
+                </tr>
+
+
+                {% for topic_word in topic %}
+                    <tr style="border-bottom: 1pt solid #DFDFDF;">
+                        <td style="padding-right: 100px;">
+                            {% if topic_word.entityID.sensitivity == 1 %}
+                                <div class="sensitivity1">{{ topic_word.entityID.text }}</div>
+                            {% elif topic_word.entityID.sensitivity == 2 %}
+                                <div class="sensitivity2">{{ topic_word.entityID.text }}</div>
+                            {% elif topic_word.entityID.sensitivity == 3 %}
+                                <div class="sensitivity3">{{ topic_word.entityID.text }}</div>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {{topic_word.weight}}
+                        </td>
+
+                    </tr>
+                {% endfor %}
+                <tr>
+                    <td> </td>
+                    <td> </td>
+                </tr>
+                <tr>
+                    <td> </td>
+                    <td> </td>
+                </tr>
+                <tr>
+                    <td> </td>
+                    <td> </td>
+                </tr>
+
+            {% endfor %}
+        </table>
+</div>
+
+</body>
+</html>

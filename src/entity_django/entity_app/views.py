@@ -7,34 +7,42 @@ from .models import *
 from .utils import *
 from .EntityTagger import *
 import gzip
+import json
 import shutil
 import codecs
 from bs4 import BeautifulSoup
 from sklearn.feature_extraction.text import TfidfVectorizer
 import pickle
+import nltk
+from nltk.corpus import stopwords
+import re
+import gensim.corpora as corpora
+import gensim
 # Create your views here.
+
 
 
 
 def home(request):
     template = loader.get_template('home.html')
-#    fitted_model=pickle.load(open('C:/Users/User/OneDrive - University of Glasgow/University Year 4/Individual Project/2464980P-L4-Project/src/entity_django/entity_app/classifier.pkl', 'rb'))
-#    fitted_vectorizer=pickle.load(open('C:/Users/User/OneDrive - University of Glasgow/University Year 4/Individual Project/2464980P-L4-Project/src/entity_django/entity_app/vectorizer.pkl', 'rb'))
 
     documents = Document.objects.all().values()
     entities = Entity.objects.all()
 
-#    for entity in entities:
-#        test_feature=fitted_vectorizer.transform([entity.abstract])
-#        predicted=fitted_model.predict_proba(test_feature)
-#        print(predicted[0])
-#        if predicted[0][1]<0.5:
-#            entity.sensitivity=1
-#        elif 0.5<=predicted[0][1]<0.8:
-#            entity.sensitivity=2
-#        elif predicted[0][1]>=0.8:
-#            entity.sensitivity=3
-#        entity.save()
+    PATH=("C:/Users/User/OneDrive - University of Glasgow/University Year 4/Individual Project/2464980P-L4-Project/src/entity_django/entity_app/")
+    classifier = pickle.load(open(PATH+'classifier.pkl','rb'))
+    vectorizer = pickle.load(open(PATH+'vectorizer.pkl', 'rb'))
+
+    for entity in entities:
+        test_feature=vectorizer.transform([entity.abstract])
+        prediction=classifier.predict_proba(test_feature)[0][1]
+        if prediction<0.5:
+            entity.sensitivity=1
+        elif 0.5<=prediction<0.75:
+            entity.sensitivity=2
+        else:
+            entity.sensitivity=3
+        entity.save()
 
     context = {
         'documents': documents,
@@ -47,8 +55,23 @@ def list_documents(request):
     tempfilenames = list(Document.objects.all().values_list('filename', flat=True))
     filenames = [filename.replace(".html.gz","") for filename in tempfilenames]
 
+    docs = Document.objects.all()
+    top_entities=[]
+    for doc in docs:
+        instances=list(Instance.objects.filter(documentID=doc).values_list('entityID', flat=True))
+        entities=Entity.objects.filter(entityID__in=instances).order_by('-sensitivity')
+
+        if len(entities)>=3:
+            entities=entities[:3]
+            ent_urls = [entity.entityID.replace("http://dbpedia.org/resource/","") for entity in entities]
+            top_entities.append(zip(entities, ent_urls))
+        else:
+            ent_urls = [entity.entityID.replace("http://dbpedia.org/resource/","") for entity in entities]
+            top_entities.append(zip(entities, ent_urls))
+
+
     context = {
-        'documents': zip(documents,filenames),
+        'documents': zip(documents,filenames,top_entities),
     }
     return HttpResponse(template.render(context, request))
 
@@ -78,7 +101,6 @@ def view_document(request, docid, instid=""):
     except:
         similar_docs = []
         ent_name=""
-    print(similar_docs)
 
     context = {
         'docid': docid,
@@ -92,16 +114,20 @@ def view_document(request, docid, instid=""):
     }
     return HttpResponse(template.render(context, request))
 
-def document_analytics(request, docid):
-    template = loader.get_template('document_analytics.html')
-    doc = Document.objects.filter(documentID=docid)[0]
-    docname = doc.filename.replace(".html.gz","")
-    chart = get_chart(docid)
+def corpus_analytics(request):
+    template = loader.get_template('corpus_analytics.html')
+
+    generateLDA(8,5)
+
+    topics=[]
+    max_topics=TopicWord.objects.all().order_by('-topicNumber')[0].topicNumber
+    for i in range(1,max_topics+1):
+        topics.append(list(TopicWord.objects.filter(topicNumber=i).order_by('-weight')))
+
+
+
     context = {
-        'docid': docid,
-        'doc' : doc,
-        'docname' : docname,
-        'chart' : chart
+        'topics' : topics
     }
     return HttpResponse(template.render(context, request))
 
@@ -111,7 +137,6 @@ def delete_document(request, docid):
 
 def add_document(request):
     if request.method == 'POST':
-        print(request.FILES.getlist('file'))
         for file2 in request.FILES.getlist('file'):
             file = File.objects.create(txtfile=file2)
             file.save()
@@ -126,9 +151,15 @@ def add_document(request):
                 document = Document.objects.get(filename=file2, text=text)
             except:
                 document = Document.objects.create(filename=file2, text=text)
-            print("about to analyse")
-            analyse_document(document)
-            print("analysed")
+                print("about to analyse")
+                analyse_document(document)
+                print("analysed")
+                tokens=[]
+                instances = Instance.objects.filter(documentID=document)
+                for instance in instances:
+                    tokens.append(instance.entityID.entityID)
+                document.tokens=json.dumps(tokens)
+                document.save()
     return HttpResponseRedirect(reverse(home))
 
 def analyse_document(document):
@@ -144,7 +175,7 @@ def analyse_document(document):
         all_URLs=Entity.objects.all().values_list('entityID', flat=True)
         if URL not in all_URLs:
             abstract = getAbstract(URL)
-            entity = Entity.objects.create(entityID=URL, abstract=abstract)
+            entity = Entity.objects.create(entityID=URL, abstract=abstract, text=URL.replace("http://dbpedia.org/resource/","").replace("_"," "))
             test_feature=fitted_vectorizer.transform([entity.abstract])
             predicted=fitted_model.predict_proba(test_feature)
             if predicted[0][1]<0.5:
@@ -190,6 +221,49 @@ def split_entities(docid,doc):
     abstracts.append("")
     indexed.append(text[prev:])
     return zip(indexed, abstracts, colors, inst_ids)
+
+
+def generateLDA(n_topics,n_words):
+    TopicWord.objects.all().delete()
+    tokens = []
+    docs = list(Document.objects.values_list('tokens', flat=True))
+    for doc in docs:
+        if doc != None:
+            tokens.append(doc)
+
+
+
+    jsonDec = json.decoder.JSONDecoder()
+    data_words = [jsonDec.decode(doc) for doc in tokens]
+
+    id2word = corpora.Dictionary(data_words)
+
+    corpus = [id2word.doc2bow(text) for text in data_words]
+
+    lda_model = gensim.models.ldamodel.LdaModel(corpus=corpus,
+                                               id2word=id2word,
+                                               num_topics=n_topics,
+                                               update_every=1,
+                                               chunksize=80,
+                                               passes=100,
+                                               alpha='auto',
+                                               iterations=200,
+                                               per_word_topics=True)
+
+    topics = lda_model.show_topics(num_topics=n_topics, num_words=n_words, formatted=True)
+
+    for index, topic in enumerate(topics):
+        topic_split=topic[1].split("+")
+        for topic_word in topic_split:
+            item=topic_word.split("*")
+            score=float(item[0].replace('"',"").replace(" ",""))
+            url=item[1].replace('"',"").replace(" ","")
+            entity=Entity.objects.filter(entityID=url)[0]
+            topicWord = TopicWord.objects.create(entityID=entity, topicNumber=index+1, weight=score)
+
+    for i in range(1,n_topics):
+        for topicWord in TopicWord.objects.filter(topicNumber=i).order_by('-weight'):
+            print(topicWord.topicNumber,topicWord.entityID,topicWord.weight)
 
 
 

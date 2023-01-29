@@ -9,9 +9,11 @@ class Document(models.Model):
     documentID = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     filename = models.TextField()
     text = models.TextField()
+    tokens = models.TextField(null=True)
 
 class Entity(models.Model):
     entityID = models.URLField(primary_key=True)
+    text = models.TextField(null=True)
     abstract = models.TextField()
     sensitivity = models.IntegerField(default=0, editable=True)
 
@@ -21,4 +23,10 @@ class Instance(models.Model):
     entityID = models.ForeignKey('Entity', on_delete=models.CASCADE)
     start = models.IntegerField()
     stop = models.IntegerField()
+
+class TopicWord(models.Model):
+    topicWordID = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    entityID = models.ForeignKey('Entity', on_delete=models.CASCADE)
+    topicNumber = models.IntegerField()
+    weight = models.FloatField(null=True)
 

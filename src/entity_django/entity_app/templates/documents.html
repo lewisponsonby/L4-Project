@@ -10,24 +10,34 @@
 </head>
 <body>
 
+
+<div class="sidenav">
+        <div onclick="history.back()" style="width: 60%; margin: 0px auto; padding-top: 15px;">
+        <div style="background-color: #4c0052; border-radius: 10px;">
+            <i class="material-icons" style="font-size:100px; color: white">arrow_back</i>
+            </div>
+        </div>
+    <div class="btn-group">
+        <a class="button" href="/home/">Homepage</a>
+        <a class="button" href="/upload_document/">Upload Documents</a>
+        <a class="button" href="/view_document/">View Documents</a>
+        <a class="button" href="/corpus_analytics">Corpus Analytics</a>
+    </div>
+</div>
+
 <div class="topnav">
 <a href="/home/">Sensitivity Detection Tool</a>
 </div>
 
-<div class="sidenav">
-    <a href="/upload_document/"><img src="{% static '/upload_button.png' %}" style="width:140px;height:95px;padding-bottom:18px;"></a>
-    <div class="btn-group">
-    <a class="button" href="/view_document/">Uploaded Documents</a>
-    <a class="button" href="">Corpus Analytics</a>
-    </div>
-</div>
 
 <div class="main">
     <div class="split left">
     <h1>View Document</h1>
     <h2>{{ docname }}</h2>
-    <div class="doc-analyse-link">
-        <i class="material-icons" style="font-size:15px;">delete</i><a href="/delete_document/{{docid}}" onclick="return confirm('Are you sure?')">Delete Document</a>
+    <div class="doc-analyse-link" onclick="location.href = '/delete_document/{{docid}}'">
+        <button class="document-button" onclick="return confirm('Are you sure?')">
+        <i class="material-icons" style="font-size:15px;">delete</i>Delete Document
+            </button>
     </div>
 
     <div class="tooltip">
@@ -39,19 +49,19 @@
             <span class="tooltiptext">{{ abstract }}</span>
         </div>
         {% elif color == 1  %}
-        <div style="display:inline; color:#255c00; background-color: #afffa3;">
+        <div class="sensitivity1">
             <span onclick="window.location='/view_document/{{docid}}/{{instid}}'">{{ index|linebreaksbr }}</span>
-            <span class="tooltiptext" style="background-color: #255c00" href="aaaa">{{ abstract }}</span>
+            <span class="tooltiptext" style="background-color: #255c00" href="aaaa"><h3>Low Sensitivity Risk</h3>{{ abstract }}</span>
         </div>
         {% elif color == 2  %}
-        <div style="display:inline; color:#825500; background-color: #ffdda3">
+        <div class="sensitivity2">
             <span onclick="window.location='/view_document/{{docid}}/{{instid}}'">{{ index|linebreaksbr }}</span>
-            <span class="tooltiptext" style="background-color: #825500">{{ abstract }}</span>
+            <span class="tooltiptext" style="background-color: #825500"><h3>Moderate Sensitivity Risk</h3>{{ abstract }}</span>
         </div>
         {% elif color == 3  %}
-        <div style="display:inline; color:#b50000; background-color: #ffa3b3">
+        <div class="sensitivity3">
             <span onclick="window.location='/view_document/{{docid}}/{{instid}}'">{{ index|linebreaksbr }}</span>
-            <span class="tooltiptext" style="background-color: #b50000">{{ abstract }}</span>
+            <span class="tooltiptext" style="background-color: #b50000"><h3>High Sensitivity Risk</h3>{{ abstract }}</span>
         </div>
         {% endif %}
 
@@ -66,7 +76,7 @@
         <img src="data:image/png;base64, {{chart}}" alt="" id="img"><br>
         <div style="padding-left: 60px;">
         {% if ent_name %}
-            <h3 >Documents containing {{ent_name}}</h3>
+            <h3 >Documents containing {{ent_name}} entity:</h3>
         {% endif %}
         <table style="border-collapse: collapse;">
 
