@@ -32,7 +32,13 @@
 
 <div class="main">
 <h1>Corpus Analytics</h1>
-    <h2>LDA Topic Modelling</h2><br>
+    <h2>LDA Topic Modelling</h2>
+
+    <a class="doc-analyse-link"  href="/regenerate_lda/" style="padding-left: 180px;" onclick="return confirm('Are you sure? This may be a time consuming process.')">
+        <button class="document-button" >
+        <i class="material-icons" style="font-size:15px;">restart_alt</i>Regenerate Topics
+            </button>
+    </a>
 
 
         <table style="border-collapse: collapse;">
@@ -44,12 +50,14 @@
                 <tr>
                     <th style="float: left;">Entity</th>
                     <th>Weighting</th>
+                    <th></th>
+                    <th>Related Documents</th>
                 </tr>
 
 
-                {% for topic_word in topic %}
+                {% for topic_word, topic_document in topic %}
                     <tr style="border-bottom: 1pt solid #DFDFDF;">
-                        <td style="padding-right: 100px;">
+                        <td style="padding-right: 50px;">
                             {% if topic_word.entityID.sensitivity == 1 %}
                                 <div class="sensitivity1">{{ topic_word.entityID.text }}</div>
                             {% elif topic_word.entityID.sensitivity == 2 %}
@@ -61,6 +69,20 @@
 
                         <td>
                             {{topic_word.weight}}
+                        </td>
+
+                        <td style="border-right: 1pt solid #DFDFDF; padding-right: 30px;"></td>
+
+                        <td>
+                            {{topic_document.documentID.filetitle}}
+                        </td>
+
+                        <td>
+                            <a href="/view_document/{{topic_document.documentID.documentID}}">
+                                <button class="document-button-icon">
+                                    <i class="material-icons" style="font-size:15px;">search</i>
+                                </button>
+                            </a>
                         </td>
 
                     </tr>

@@ -34,9 +34,9 @@
     <h1>Uploaded Documents</h1>
     <table style="border-collapse: collapse; ">
 
-    {% for document,filename,top_entities in documents %}
+    {% for document,top_entities in documents %}
         <tr style="border-bottom: 1pt solid #DFDFDF;">
-            <td style="padding-right: 50px;">{{ filename }}</td>
+            <td style="padding-right: 50px;">{{ document.filetitle }}</td>
 
 
             <td>

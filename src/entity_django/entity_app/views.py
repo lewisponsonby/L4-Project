@@ -25,24 +25,7 @@ import gensim
 
 def home(request):
     template = loader.get_template('home.html')
-
     documents = Document.objects.all().values()
-    entities = Entity.objects.all()
-
-    PATH=("C:/Users/User/OneDrive - University of Glasgow/University Year 4/Individual Project/2464980P-L4-Project/src/entity_django/entity_app/")
-    classifier = pickle.load(open(PATH+'classifier.pkl','rb'))
-    vectorizer = pickle.load(open(PATH+'vectorizer.pkl', 'rb'))
-
-    for entity in entities:
-        test_feature=vectorizer.transform([entity.abstract])
-        prediction=classifier.predict_proba(test_feature)[0][1]
-        if prediction<0.5:
-            entity.sensitivity=1
-        elif 0.5<=prediction<0.75:
-            entity.sensitivity=2
-        else:
-            entity.sensitivity=3
-        entity.save()
 
     context = {
         'documents': documents,
@@ -51,13 +34,10 @@ def home(request):
 
 def list_documents(request):
     template = loader.get_template('list_documents.html')
-    documents = Document.objects.all().values()
-    tempfilenames = list(Document.objects.all().values_list('filename', flat=True))
-    filenames = [filename.replace(".html.gz","") for filename in tempfilenames]
+    documents = Document.objects.all()
 
-    docs = Document.objects.all()
     top_entities=[]
-    for doc in docs:
+    for doc in documents:
         instances=list(Instance.objects.filter(documentID=doc).values_list('entityID', flat=True))
         entities=Entity.objects.filter(entityID__in=instances).order_by('-sensitivity')
 
@@ -71,7 +51,7 @@ def list_documents(request):
 
 
     context = {
-        'documents': zip(documents,filenames,top_entities),
+        'documents': zip(documents,top_entities),
     }
     return HttpResponse(template.render(context, request))
 
@@ -116,20 +96,28 @@ def view_document(request, docid, instid=""):
 
 def corpus_analytics(request):
     template = loader.get_template('corpus_analytics.html')
-
-    generateLDA(8,5)
-
+    if not TopicWord.objects.all():
+        generateLDA()
     topics=[]
+
     max_topics=TopicWord.objects.all().order_by('-topicNumber')[0].topicNumber
+
     for i in range(1,max_topics+1):
-        topics.append(list(TopicWord.objects.filter(topicNumber=i).order_by('-weight')))
+        topic_words=list(TopicWord.objects.filter(topicNumber=i).order_by('-weight'))
+        topic_docs=list(TopicDocument.objects.filter(topicNumber=i).order_by('-weight'))
+        topics.append(zip(topic_words,topic_docs))
 
 
 
     context = {
-        'topics' : topics
+        'topics' : topics,
     }
     return HttpResponse(template.render(context, request))
+
+def regenerate_lda(request):
+    generateLDA(8,7)
+    print("regenerated")
+    return HttpResponseRedirect(reverse(corpus_analytics))
 
 def delete_document(request, docid):
     Document.objects.filter(documentID=docid).delete()
@@ -223,7 +211,7 @@ def split_entities(docid,doc):
     return zip(indexed, abstracts, colors, inst_ids)
 
 
-def generateLDA(n_topics,n_words):
+def generateLDA(n_topics=8,n_words=5):
     TopicWord.objects.all().delete()
     tokens = []
     docs = list(Document.objects.values_list('tokens', flat=True))
@@ -244,7 +232,7 @@ def generateLDA(n_topics,n_words):
                                                id2word=id2word,
                                                num_topics=n_topics,
                                                update_every=1,
-                                               chunksize=80,
+                                               chunksize=10,
                                                passes=100,
                                                alpha='auto',
                                                iterations=200,
@@ -264,6 +252,28 @@ def generateLDA(n_topics,n_words):
     for i in range(1,n_topics):
         for topicWord in TopicWord.objects.filter(topicNumber=i).order_by('-weight'):
             print(topicWord.topicNumber,topicWord.entityID,topicWord.weight)
+
+
+
+    all_topics=lda_model.print_topics()
+    docs_per_topic = [[] for _ in all_topics]
+
+    for doc_id, doc_bow in enumerate(corpus):
+        doc_topics = lda_model.get_document_topics(doc_bow)
+        for topic_id, score in doc_topics:
+            docs_per_topic[topic_id].append((doc_id, score))
+
+    for doc_list in docs_per_topic:
+        doc_list.sort(key=lambda id_and_score: id_and_score[1], reverse=True)
+
+    for topic_num in range(n_topics):
+        for doc_num in range(n_words):
+            print(topic_num,doc_num)
+            doc_json = json.dumps(data_words[docs_per_topic[topic_num][doc_num][0]])
+            doc_weight = docs_per_topic[topic_num][doc_num][1]
+            top_document = Document.objects.filter(tokens=doc_json)[0]
+            topicDocument = TopicDocument.objects.create(documentID=top_document, topicNumber=topic_num+1, weight=doc_weight)
+
 
 
 

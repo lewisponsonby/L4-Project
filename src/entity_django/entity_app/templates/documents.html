@@ -34,11 +34,11 @@
     <div class="split left">
     <h1>View Document</h1>
     <h2>{{ docname }}</h2>
-    <div class="doc-analyse-link" onclick="location.href = '/delete_document/{{docid}}'">
-        <button class="document-button" onclick="return confirm('Are you sure?')">
+    <a class="doc-analyse-link" href="/delete_document/{{docid}}" onclick="return confirm('Are you sure?')">
+        <button class="document-button" >
         <i class="material-icons" style="font-size:15px;">delete</i>Delete Document
             </button>
-    </div>
+    </a>
 
     <div class="tooltip">
 
@@ -72,8 +72,8 @@
 
     </div>
 
-    <div class="split right">
-        <img src="data:image/png;base64, {{chart}}" alt="" id="img"><br>
+    <div class="split right" style="position: fixed; padding-top: 200px;">
+        <img src="data:image/png;base64, {{chart}}" alt="" id="img" style="padding-left: 50px;"><br>
         <div style="padding-left: 60px;">
         {% if ent_name %}
             <h3 >Documents containing {{ent_name}} entity:</h3>
