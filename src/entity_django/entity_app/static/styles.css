@@ -1,215 +1,122 @@
+html, body, .background {
+    height: 100%;
+
+}
+
+
 body {
-  font-family: "KoHo";
-  margin: 0px;
-}
-
-.sidenav {
-  height: 100%;
-  width: 192px;
-  position: fixed;
-  z-index: 5;
-  top: 0;
-  left: 0;
-  background-color: #320036;
-  overflow-x: hidden;
-}
-
-
-
-.sidenav a {
-  font-size: 18px;
-  color: #FFFFFF;
-  display: block;
-  text-align: center;
-
-}
-
-.sidenav a:hover {
-  color: #f1f1f1;
-}
-
-.main {
-  margin-left: 200px;
-  padding: 20px 60px;
-  font-size: 18px;
-}
-
-h1 {
-    font-size: 36px;
-    font-weight:bolder;
-    padding-left: 0px;
- }
-
-h2 {
-    font-size: 28px;
-    font-weight:bold;
-    padding-left: 15px;
-    display: inline;
- }
-
- p {
-    padding-left:15px;
-    padding-right:192px;
- }
-
-.split {
-  height: 100%;
-  width: 50%;
-
-  top: 0;
-  overflow: hidden;
-}
-
-/* Control the left side */
-.left {
-  left: 0;
-  float: left;
-  z-index: 1;
-}
-
-/* Control the right side */
-.right {
-  right: 0;
-  float: right;
-  padding-top: 120px;
-  z-index: 0;
-}
-
-.tooltip {
-    padding-left: 45px;
+    font-family: "KoHo";
+    margin: 0px;
+    color: #040742;
+    background-image: url('background-img.png');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    margin-top: 80px;
 }
 
 .topnav {
-  height: 138px;
-  background-color: #4c0052;
+  height: 60px;
+  background-color: #859ec7;
+  width: 100%;
   overflow: hidden;
   z-index: 0;
-  border-bottom: 10px black;
+  position: fixed;
+  top: 0;
 }
 
 .topnav a {
+  width: 80px;
+  font-weight: bold;
+  font-size: large;
+  float: left;
+  background-color: #859ec7;
+  color: #f2f2f2;
   text-align: center;
-  padding-top: 30px;
+  padding: 18px 20px;
   text-decoration: none;
-  font-style: normal;
-  font-weight: 700;
-  font-size: 48px;
-  color: #FFFFFF;
-  display: block;
-  z-index: 3;
+  transition: 0.3s ease;
 }
 
-.tooltip>div:nth-child(even) {
-    color: #000000;
-    font-weight:bold;
+.topnav a:hover {
+  background-image: linear-gradient(to top, #7b8fb0, #859ec7);
+  margin-top: 3px;
 }
 
-.tooltip .tooltiptext {
-    visibility: hidden;
-    width: 400px;
-    font-weight: normal;
-    background-color: black;
-    color: #fff;
-    text-align: center;
-    border-radius: 6px;
-    padding: 5px 0;
-    position: absolute;
-    z-index: 1;
+.topnav a.active {
+  background-image: linear-gradient(to top, #7b8fb0, #859ec7);
+  margin-top: 3px;
 }
 
-.doc-analyse-link {
-    padding-left: 120px;
-    display: inline;
+.topnav a.active:hover {
+  background-image: linear-gradient(to top, #7b8fb0, #859ec7);
 }
 
-.document-button {
-    text-align: center;
-    transition-duration: 0.3s;
-    font-family: "KoHo";
-    border-radius: 5px;
-    border: 2px solid gray;
-    white-space: nowrap;
-    overflow: hidden;
+.topnav a.upload {
+    width: 150px;
+    margin-left: 100px;
+}
+
+.topnav a.upload-active {
+    width: 150px;
+    margin-left: 100px;
+    margin-top: 3px;
+    background-image: linear-gradient(to top, #7b8fb0, #859ec7);
+    transition: 1s ease;
+}
+
+.topnav a.upload-active:hover {
+    margin-top: 3px;
+}
+
+.topnav a.upload-active .material-icons {
+    padding-left: 10px;
+    font-size: large;
+}
+
+.topnav a.title {
+    width: 300px;
+    font-size: large;
+}
+
+.topnav a.title:hover {
+    width: 300px;
+    background-color: #859ec7;
+    background-image: linear-gradient(to top, #859ec7, #859ec7);
+    margin-top: 0px;
+}
+
+.topnav .upload .material-icons {
+    padding-left: 10px;
+    font-size: large;
+}
+
+box {
+    background-color: #EBEBEB;
+    overflow:hidden;
+    height: 100px;
+}
+
+.main {
+    margin-top: 25px;
+    margin-left: 150px;
+    margin-right: 150px;
+    height: 100%;
+}
+
+.list-header {
+    font-size: x-large;
+    font-weight: bold;
+}
+
+td {
+    padding-top: 5px;
     padding-bottom: 5px;
-    padding-right: 10px;
 }
 
-.document-button-icon {
-    text-align: center;
-    transition-duration: 0.3s;
-    font-family: "KoHo";
-    border-radius: 5px;
-    border: 2px solid gray;
-    white-space: nowrap;
-    overflow: hidden;
+.three-ents {
+    transition: 0.3s ease;
 }
 
-.document-button:hover {
-   background-color: white;
-}
-
-.document-button-icon:hover {
-   background-color: white;
-}
-
-.tooltip>div:nth-child(even):hover .tooltiptext {
-    visibility: visible;
-}
-
-.sidenav .btn-group {
-  padding-top: 12px;
-}
-
-.sidenav .btn-group .button {
-  background-color: #320036;
-  border: 1px solid #4c0052;
-  color: white;
-  cursor: pointer;
-  padding-top: 30px;
-  width: 100%;
-  height:60px;
-  display: block;
-}
-
-.btn-group button:not(:last-child) {
-  border-bottom: none;
-}
-
-.sidenav .btn-group .button:hover {
-  background-color: #4c0052;
-}
-
- td {
-    padding: 5px 5px;
-  }
-
-  i {
-    padding: 5px 5px;
-  }
-
-html { min-height: 100%; }
-body { min-height: 100%; }
-
-.middle-parting {
-  border-left: 6px solid #e3e3e3;
-  padding-top: 250px;
-  min-height: 220%;
-  position: absolute;
-  left: 50%;
-  margin-left: -3px;
-  top: 250px;
-}
-
-label.myLabel input[type="file"] {
-    position:absolute;
-    top: -1000px;
-}
-
-.myLabel {
-    width: 500px;
-    height: 200px;
-    display: inline-block;
-}
 
 .sensitivity3 {
     display: inline;
@@ -217,6 +124,7 @@ label.myLabel input[type="file"] {
     color: #b50000 !important;
     background-color: #ffa3b3;
     border-radius: 7.5px;
+    transition: 0.3s;
 }
 
 .sensitivity2 {
@@ -225,6 +133,7 @@ label.myLabel input[type="file"] {
     color:#825500 !important;
     background-color: #ffdda3;
     border-radius: 7.5px;
+    transition: 0.3s;
 }
 
 .sensitivity1 {
@@ -233,9 +142,98 @@ label.myLabel input[type="file"] {
     color:#255c00 !important;
     background-color: #afffa3;
     border-radius: 7.5px;
+    transition: 0.3s;
 }
 
-form {
-  background: url('C:\Users\User\OneDrive - University of Glasgow\University Year 4\Individual Project\2464980P-L4-Project\src\entity_django\entity_app\static\upload_box.png');
+.document-button-icon {
+    padding-top: 4px;
+    padding-bottom: 2px;
+    text-align: center;
+    transition-duration: 0.3s;
+    font-family: "KoHo";
+    border-radius: 5px;
+    border: 2px solid gray;
+    white-space: nowrap;
+    overflow: hidden;
 }
+
+.document-button-icon:hover {
+    background-color: white
+}
+
+tr:nth-child(even) {
+    background-color: white;
+}
+
+.three-ents:not(:first-child):hover {
+    font-size:13pt;
+}
+
+.wrapper {
+    background-image: linear-gradient(to right, #e8e8e8, white);
+    padding: 1px 10px 1px 10px;
+    border-radius: 10px;
+    z-index: 0;
+}
+
+.tooltip {
+    font-size: large;
+    margin-left: 60px;
+    margin-right: 40px;
+    padding: 30px 0px 20px 0px;
+
+}
+
+
+.tooltip>div:nth-child(even) {
+    color: #000000;
+    font-weight:bold;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 570px;
+    height: 526px;
+    left: 798px;
+    top: 145px;
+    padding-bottom: 10px;
+    font-weight: normal;
+    color: #fff;
+    text-align: center;
+    border-radius: 5px;
+    position: fixed;
+    opacity: 0;
+    transition: opacity 0.3s;
+
+}
+
+.tooltip>div:nth-child(even):hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+    z-index: 5;
+}
+
+.tooltip .sensitivity1:hover {
+    padding: 2px 0px 2px 0px;
+    font-size: 19px;
+}
+
+.tooltip .sensitivity2:hover {
+    padding: 2px 0px 2px 0px;
+    font-size: 19px;
+}
+
+.tooltip .sensitivity3:hover {
+    padding: 2px 0px 2px 0px;
+    font-size: 19px;
+}
+
+canvas {
+  margin: auto;
+  left: 0;
+  right: 0;
+}
+
+
+
 

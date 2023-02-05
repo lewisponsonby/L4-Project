@@ -34,7 +34,7 @@ def home(request):
 
 def list_documents(request):
     template = loader.get_template('list_documents.html')
-    documents = Document.objects.all()
+    documents = Document.objects.all()[:50]
 
     top_entities=[]
     for doc in documents:
@@ -68,29 +68,54 @@ def view_document(request, docid, instid=""):
     doc = Document.objects.filter(documentID=docid)[0]
     indexed = split_entities(docid,doc)
     template = loader.get_template('documents.html')
-    docname = doc.filename.replace(".html.gz","")
-    chart = get_chart(docid)
-    try:
-        inst_ent = Instance.objects.filter(instanceID=instid)[0].entityID
-        similar_docs = list(set(Instance.objects.filter(entityID=inst_ent).values_list('documentID', flat=True)))
-        similar_docs = [Document.objects.filter(documentID=docid)[0] for docid in similar_docs]
-        similar_docids = [doc.documentID for doc in similar_docs]
-        similar_docnames = [str(doc.filename).replace(".html.gz","") for doc in similar_docs]
-        similar_docs = zip(similar_docids,similar_docnames)
-        ent_name = str(inst_ent.entityID).split("/")[-1].replace('_', ' ')
-    except:
-        similar_docs = []
-        ent_name=""
+
+    instances = Instance.objects.filter(documentID=docid)
+    entities = []
+    colors = {}
+
+    for instance in instances:
+        entity_name = instance.entityID.text
+        entities.append(entity_name)
+        colors[entity_name] = instance.entityID.sensitivity
+
+    counter = dict(Counter(entities).most_common(7))
+    color = [colors[key] for key in counter.keys()]
+    for i in range(len(color)):
+        if color[i] == 1:
+            color[i] = 'green'
+
+        if color[i] == 2:
+            color[i] = 'orange'
+
+        if color[i] == 3:
+            color[i] = 'red'
+
+    counter_ = dict(Counter(entities))
+    color_ = [colors[key] for key in counter_.keys()]
+    color_counter=dict(Counter(color_))
+    color_freqs=list(color_counter.values())
+    color_vals = list(map(lambda x: str(x).replace('1', 'green').replace('2','orange').replace('3','red'), list(color_counter.keys())))
+    color_keys = list(map(lambda x: str(x).replace('green', 'Low Sensitivity Entites').replace('orange', 'Moderate Sensitivity Entities').replace('red', 'High Sensitivity Entities'), color_vals))
+
+    fig_ents=list((counter.keys()))
+    fig_freqs=list((counter.values()))
+    colors=list((color))
+
+    print(color_freqs,color_vals,color_keys)
+    print(color_counter)
+
+
 
     context = {
         'docid': docid,
         'doc': doc,
-        'chart': chart,
-        'docname' : docname,
         'indexed' : indexed,
-        'documents' : documents,
-        'similar_docs' : similar_docs,
-        'ent_name': ent_name,
+        'fig_ents' : fig_ents,
+        'fig_freqs' : fig_freqs,
+        'color' : colors,
+        'color_freqs' : color_freqs,
+        'color_vals' : color_vals,
+        'color_keys' : color_keys,
     }
     return HttpResponse(template.render(context, request))
 
@@ -203,11 +228,19 @@ def split_entities(docid,doc):
         colors.append(0)
         colors.append(instance.entityID.sensitivity)
         indexed.append(text[prev:instance.start])
-        indexed.append(text[instance.start:instance.stop])
+        indexed.append(text[instance.start:instance.stop].upper())
         prev=instance.stop
     inst_ids.append("")
     abstracts.append("")
     indexed.append(text[prev:])
+    started=False
+    for item in indexed[0].split("\n"):
+        if "classified" in item or "unclassified" in item or "secret" in item:
+            if not started:
+                indexed[0]=""
+                started=True
+            elif started:
+                indexed[0]+=item
     return zip(indexed, abstracts, colors, inst_ids)
 
 

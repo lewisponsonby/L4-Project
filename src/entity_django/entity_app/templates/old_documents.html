@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+{% load static %}
+<link rel="stylesheet" href="{% static 'styles.css' %}">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link href='https://fonts.googleapis.com/css?family=KoHo' rel='stylesheet'>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+    <title>Sensitivity Detection Tool</title>
+</head>
+<body>
+
+
+<div class="sidenav">
+        <div onclick="history.back()" style="width: 60%; margin: 0px auto; padding-top: 15px;">
+        <div style="background-color: #4c0052; border-radius: 10px;">
+            <i class="material-icons" style="font-size:100px; color: white">arrow_back</i>
+            </div>
+        </div>
+    <div class="btn-group">
+        <a class="button" href="/home/">Homepage</a>
+        <a class="button" href="/upload_document/">Upload Documents</a>
+        <a class="button" href="/view_document/">View Documents</a>
+        <a class="button" href="/corpus_analytics">Corpus Analytics</a>
+    </div>
+</div>
+
+<div class="topnav">
+<a href="/home/">Sensitivity Detection Tool</a>
+</div>
+
+
+<div class="main">
+    <div class="split left">
+    <h1>View Document</h1>
+    <h2>{{ doc.filetitle }}</h2>
+    <a class="doc-analyse-link" href="/delete_document/{{docid}}" onclick="return confirm('Are you sure?')">
+        <button class="document-button" >
+        <i class="material-icons" style="font-size:15px;">delete</i>Delete Document
+            </button>
+    </a>
+
+    <div class="tooltip">
+
+    {% for index, abstract, color, instid in indexed %}
+        {% if color == 0  %}
+        <div style="display:inline">
+            {{ index|linebreaksbr }}
+            <span class="tooltiptext">{{ abstract }}</span>
+        </div>
+        {% elif color == 1  %}
+        <div class="sensitivity1">
+            <span onclick="window.location='/view_document/{{docid}}/{{instid}}'">{{ index|linebreaksbr }}</span>
+            <span class="tooltiptext" style="background-color: #255c00" href="aaaa"><h3>Low Sensitivity Risk</h3>{{ abstract }}</span>
+        </div>
+        {% elif color == 2  %}
+        <div class="sensitivity2">
+            <span onclick="window.location='/view_document/{{docid}}/{{instid}}'">{{ index|linebreaksbr }}</span>
+            <span class="tooltiptext" style="background-color: #825500"><h3>Moderate Sensitivity Risk</h3>{{ abstract }}</span>
+        </div>
+        {% elif color == 3  %}
+        <div class="sensitivity3">
+            <span onclick="window.location='/view_document/{{docid}}/{{instid}}'">{{ index|linebreaksbr }}</span>
+            <span class="tooltiptext" style="background-color: #b50000"><h3>High Sensitivity Risk</h3>{{ abstract }}</span>
+        </div>
+        {% endif %}
+
+
+    {% endfor %}
+
+    </div>
+
+    </div>
+
+    <div class="split right" style="position: fixed; padding-top: 250px;">
+        <canvas id="myChart" style="width:100%;max-width:700px"></canvas>
+
+        <script>
+        var xValues = {{fig_ents|safe}};
+        var yValues = {{fig_freqs|safe}};
+        var barColors = {{color|safe}};
+
+        new Chart("myChart", {
+          type: "horizontalBar",
+          data: {
+            labels: xValues,
+            datasets: [{
+              backgroundColor: barColors,
+              data: yValues
+            }]
+          },
+          options: {
+            scales: {
+              yAxes: [{
+                display: true,
+                  ticks: {
+                    beginAtZero: true
+                  }
+              }]
+            }
+          }
+        });
+        </script>
+    </div>
+</div>
+
+</body>
+</html>
