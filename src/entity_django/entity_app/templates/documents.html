@@ -16,14 +16,14 @@
     <a class="title" href="">Sensitivity Detection Tool</a>
     <a href="/home">Home</a>
     <a class="active" href="/view_document/">Documents</a>
-    <a href="">Entities</a>
+    <a href="/view_entity">Entities</a>
     <a href="">Analytics</a>
     <a href="/upload_document/" class="upload" style="float: right;">Upload Files<i class="material-icons">upload</i></a>
 </div>
 
 
 <div class="main">
-    <h1>View Documents</h1>
+    <h1>View Document</h1>
     <div class="wrapper" style="width: 50%; float: left; padding-top: 30px; ">
         <h2 style="margin-left: 40px; display: inline;">{{doc.filetitle}}</h2>
 
@@ -35,7 +35,7 @@
 
 
         <div class="tooltip">
-            {% for index, abstract, color, instid in indexed %}
+            {% for index, abstract, color, entid in indexed %}
             {% if color == 0  %}
             <div style="display:inline">
                 {{ index|linebreaksbr }}
@@ -43,18 +43,18 @@
             </div>
             {% elif color == 1  %}
             <div class="sensitivity1">
-                <span onclick="window.location='/view_document/{{docid}}/{{instid}}'">{{ index|linebreaksbr }}</span>
-                <span class="tooltiptext" style="background-color: #255c00" href="aaaa"><h3>Low Sensitivity Risk</h3>{{ abstract }}</span>
+                <span onclick="window.location.href='/view_entity/{{entid.slug}}'">{{ index|linebreaksbr }}</span>
+                <span class="tooltiptext" style="background-image: linear-gradient(to bottom, #255c00, #41a838);" href="aaaa"><h3>Low Sensitivity Risk</h3>{{ abstract }}</span>
             </div>
             {% elif color == 2  %}
             <div class="sensitivity2">
-                <span onclick="window.location='/view_document/{{docid}}/{{instid}}'">{{ index|linebreaksbr }}</span>
-                <span class="tooltiptext" style="background-color: #825500"><h3>Moderate Sensitivity Risk</h3>{{ abstract }}</span>
+                <span onclick="window.location.href='/view_entity/{{entid.slug}}'">{{ index|linebreaksbr }}</span>
+                <span class="tooltiptext" style="background-image: linear-gradient(to bottom, #825500, orange);"><h3>Moderate Sensitivity Risk</h3>{{ abstract }}</span>
             </div>
             {% elif color == 3  %}
             <div class="sensitivity3">
-                <span onclick="window.location='/view_document/{{docid}}/{{instid}}'">{{ index|linebreaksbr }}</span>
-                <span class="tooltiptext" style="background-color: #b50000"><h3>High Sensitivity Risk</h3>{{ abstract }}</span>
+                <span onclick="window.location.href='/view_entity/{{entid.slug}}'">{{ index|linebreaksbr }}</span>
+                <span class="tooltiptext" style="background-image: linear-gradient(to bottom, #b50000, #de4c45);"><h3>High Sensitivity Risk</h3>{{ abstract }}</span>
             </div>
             {% endif %}
             {% endfor %}

@@ -41,17 +41,37 @@ def list_documents(request):
         instances=list(Instance.objects.filter(documentID=doc).values_list('entityID', flat=True))
         entities=Entity.objects.filter(entityID__in=instances).order_by('-sensitivity')
 
-        if len(entities)>=3:
-            entities=entities[:3]
-            ent_urls = [entity.entityID.replace("http://dbpedia.org/resource/","") for entity in entities]
-            top_entities.append(zip(entities, ent_urls))
-        else:
-            ent_urls = [entity.entityID.replace("http://dbpedia.org/resource/","") for entity in entities]
-            top_entities.append(zip(entities, ent_urls))
+        ent_urls = [entity.text for entity in entities]
+        top_entities.append(zip(entities, ent_urls))
 
 
     context = {
         'documents': zip(documents,top_entities),
+    }
+    return HttpResponse(template.render(context, request))
+
+
+def list_entities(request):
+    template = loader.get_template('list_entities.html')
+    entities = Entity.objects.all()[:50]
+    ent_docs=[]
+    for entity in entities:
+        ent_docids = Instance.objects.filter(entityID=entity).values_list('documentID', flat=True)
+        ent_docs.append(list(set(Document.objects.filter(documentID__in=ent_docids))))
+
+    context = {
+        'entities': zip(entities,ent_docs),
+    }
+    return HttpResponse(template.render(context, request))
+
+def view_entity(request, entid):
+    template = loader.get_template('entity.html')
+    ent = Entity.objects.filter(slug=entid)[0]
+    ent_docids = Instance.objects.filter(entityID=ent).values_list('documentID', flat=True)
+    ent_docs=(list(set(Document.objects.filter(documentID__in=ent_docids))))
+    context = {
+        'ent' : ent,
+        'ent_docs' : ent_docs,
     }
     return HttpResponse(template.render(context, request))
 
@@ -63,7 +83,7 @@ def upload_document(request):
     }
     return HttpResponse(template.render(context, request))
 
-def view_document(request, docid, instid=""):
+def view_document(request, docid):
     documents = Document.objects.all().values()
     doc = Document.objects.filter(documentID=docid)[0]
     indexed = split_entities(docid,doc)
@@ -188,7 +208,7 @@ def analyse_document(document):
         all_URLs=Entity.objects.all().values_list('entityID', flat=True)
         if URL not in all_URLs:
             abstract = getAbstract(URL)
-            entity = Entity.objects.create(entityID=URL, abstract=abstract, text=URL.replace("http://dbpedia.org/resource/","").replace("_"," "))
+            entity = Entity.objects.create(entityID=URL, abstract=abstract, text=URL.replace("http://dbpedia.org/resource/","").replace("_"," "), slug=URL.replace("http://dbpedia.org/resource/",""))
             test_feature=fitted_vectorizer.transform([entity.abstract])
             predicted=fitted_model.predict_proba(test_feature)
             if predicted[0][1]<0.5:
@@ -218,11 +238,11 @@ def split_entities(docid,doc):
     indexed=[]
     abstracts=[]
     colors=[]
-    inst_ids=[]
+    ent_ids=[]
     prev=0
     for instance in instances:
-        inst_ids.append("")
-        inst_ids.append(str(instance).split(" ")[-1].replace("(","").replace(")",""))
+        ent_ids.append("")
+        ent_ids.append(instance.entityID)
         abstracts.append("")
         abstracts.append(instance.entityID.abstract)
         colors.append(0)
@@ -230,18 +250,18 @@ def split_entities(docid,doc):
         indexed.append(text[prev:instance.start])
         indexed.append(text[instance.start:instance.stop].upper())
         prev=instance.stop
-    inst_ids.append("")
+    ent_ids.append("")
     abstracts.append("")
     indexed.append(text[prev:])
     started=False
     for item in indexed[0].split("\n"):
-        if "classified" in item or "unclassified" in item or "secret" in item:
+        if "classified" in item or "unclassified" in item or "secret" in item or "confidential" in item:
             if not started:
                 indexed[0]=""
                 started=True
             elif started:
                 indexed[0]+=item
-    return zip(indexed, abstracts, colors, inst_ids)
+    return zip(indexed, abstracts, colors, ent_ids)
 
 
 def generateLDA(n_topics=8,n_words=5):

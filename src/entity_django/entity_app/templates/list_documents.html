@@ -7,31 +7,54 @@
     <link href='https://fonts.googleapis.com/css?family=KoHo' rel='stylesheet'>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <title>Sensitivity Detection Tool</title>
+    <script>
+    function docSearch() {
+      var input, filter, table, tr, td, i, txtValue;
+      input = document.getElementById("docInput");
+      filter = input.value.toUpperCase();
+      table = document.getElementById("docTable");
+      tr = table.getElementsByTagName("tr");
+
+      for (i = 0; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td")[0];
+        if (td) {
+          txtValue = td.textContent || td.innerText;
+          if (txtValue.toUpperCase().indexOf(filter) > -1) {
+            tr[i].style.display = "";
+          } else {
+            tr[i].style.display = "none";
+          }
+        }
+      }
+    }
+    </script>
 </head>
 <bod>
     <div class="topnav">
         <a class="title" href="">Sensitivity Detection Tool</a>
         <a href="/home">Home</a>
         <a class="active" href="/view_document/">Documents</a>
-        <a href="">Entities</a>
+        <a href="/view_entity">Entities</a>
         <a href="">Analytics</a>
         <a href="/upload_document/" class="upload" style="float: right;">Upload Files<i class="material-icons">upload</i></a>
     </div>
 
     <div class="main">
-        <h1>Uploaded Documents</h1>
-        <div class="wrapper">
-        <table style="border-collapse: collapse; width: 100%">
+        <h1 style="display: inline;">View Documents</h1>
+        <input type="text" id="docInput" onkeyup="docSearch()" style="float:right; border-radius: 5px; padding: 3px 20px 3px 3px; width: 350px; font-size: large; font-family: 'KoHo'; margin-right: 70px;" placeholder="Search documents...">
+
+        <div class="wrapper" style="margin-top: 10px;">
+        <table id="docTable" style="border-collapse: collapse; width: 100%; table-layout: fixed;">
             <tr class="list-header">
-                <td style="padding-left: 10px;">Filename</td>
-                <td>Key Entities</td>
+                <th style="padding-left: 10px; width: 200px;">Filename</th>
+                <th style="width: 700px;">Key Entities</th>
             </tr>
 
             {% for document,top_entities in documents %}
                 <tr style="border-top: 1pt solid #DFDFDF; margin-bottom: 30px;">
                     <td style="padding-right: 0px; border-radius: 5px 0px 0px 5px; padding-left: 10px; font-weight: 600;">{{ document.filetitle }}</td>
 
-                    <td class="three-ents" style="margin-right: 120px;">
+                    <td nowrap="nowrap" style="overflow: hidden; padding-right: 100px; -webkit-mask-image: linear-gradient(90deg, #000 80%, transparent);">
                         {% for entity, ent_url in top_entities %}
                             {% if entity.sensitivity == 0  %}
                             <div>
@@ -54,17 +77,18 @@
                     </td>
 
                     <td>
-                    <a href="/view_document/{{document.documentID}}">
+                    <td style="float:right; padding-right: 60px;">
+                    <a href="/delete_document/{{document.documentID}}" onclick="return confirm('Are you sure?')">
                         <button class="document-button-icon">
-                            <i class="material-icons" style="font-size:15px;">search</i>
+                            <i class="material-icons" style="font-size:15px;">delete</i>
                         </button>
                     </a>
                     </td>
 
-                    <td>
-                    <a href="/delete_document/{{document.documentID}}" onclick="return confirm('Are you sure?')">
+                    <td style="float:right;">
+                    <a href="/view_document/{{document.documentID}}">
                         <button class="document-button-icon">
-                            <i class="material-icons" style="font-size:15px;">delete</i>
+                            <i class="material-icons" style="font-size:15px;">search</i>
                         </button>
                     </a>
                     </td>

@@ -17,6 +17,7 @@ class Entity(models.Model):
     text = models.TextField(null=True)
     abstract = models.TextField()
     sensitivity = models.IntegerField(default=0, editable=True)
+    slug = models.TextField(null=True)
 
 class Instance(models.Model):
     instanceID = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

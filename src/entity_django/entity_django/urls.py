@@ -26,6 +26,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('view_document/', views.list_documents, name='list_documents.html'),
     path('view_document/<str:docid>/', views.view_document, name='docid'),
-    path('view_document/<str:docid>/<str:instid>/', views.view_document, name='documents.html'),
+    path('view_entity/', views.list_entities, name='list_entities.html'),
+    path('view_entity/<str:entid>/', views.view_entity, name='entid'),
     path('corpus_analytics/', views.corpus_analytics, name='corpus_analytics.html')
 ]

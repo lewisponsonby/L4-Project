@@ -6,7 +6,7 @@ html, body, .background {
 
 body {
     font-family: "KoHo";
-    margin: 0px;
+    margin: 60px 0px 0px 0px;
     color: #040742;
     background-image: url('background-img.png');
     background-repeat: no-repeat;
@@ -19,7 +19,7 @@ body {
   background-color: #859ec7;
   width: 100%;
   overflow: hidden;
-  z-index: 0;
+  z-index: 6;
   position: fixed;
   top: 0;
 }
@@ -122,7 +122,7 @@ td {
     display: inline;
     font-weight: bold;
     color: #b50000 !important;
-    background-color: #ffa3b3;
+    background-image: linear-gradient(to bottom, #ffa3b3, #ff5e7b);
     border-radius: 7.5px;
     transition: 0.3s;
 }
@@ -131,7 +131,7 @@ td {
     display:inline;
     font-weight: bold;
     color:#825500 !important;
-    background-color: #ffdda3;
+    background-image: linear-gradient(to bottom, #ffdda3, #ffc86b);
     border-radius: 7.5px;
     transition: 0.3s;
 }
@@ -140,7 +140,7 @@ td {
     display:inline;
     font-weight: bold;
     color:#255c00 !important;
-    background-color: #afffa3;
+    background-image: linear-gradient(to bottom, #afffa3, #78ff63);
     border-radius: 7.5px;
     transition: 0.3s;
 }
@@ -181,7 +181,6 @@ tr:nth-child(even) {
     margin-left: 60px;
     margin-right: 40px;
     padding: 30px 0px 20px 0px;
-
 }
 
 
@@ -192,40 +191,25 @@ tr:nth-child(even) {
 
 .tooltip .tooltiptext {
     visibility: hidden;
-    width: 570px;
-    height: 526px;
-    left: 798px;
-    top: 145px;
+    width: 453px;
+    height: 530px;
+    left: 797px;
+    top: 143px;
     padding-bottom: 10px;
     font-weight: normal;
     color: #fff;
     text-align: center;
-    border-radius: 5px;
+    border-radius: 10px;
     position: fixed;
     opacity: 0;
     transition: opacity 0.3s;
-
+    padding: 10px 60px 0px 60px;
 }
 
 .tooltip>div:nth-child(even):hover .tooltiptext {
     visibility: visible;
     opacity: 1;
     z-index: 5;
-}
-
-.tooltip .sensitivity1:hover {
-    padding: 2px 0px 2px 0px;
-    font-size: 19px;
-}
-
-.tooltip .sensitivity2:hover {
-    padding: 2px 0px 2px 0px;
-    font-size: 19px;
-}
-
-.tooltip .sensitivity3:hover {
-    padding: 2px 0px 2px 0px;
-    font-size: 19px;
 }
 
 canvas {
