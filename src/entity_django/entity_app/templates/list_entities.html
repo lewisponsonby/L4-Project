@@ -42,7 +42,7 @@
     <div class="main">
 
         <h1 style="display: inline;">View Entities</h1>
-        <input type="text" id="entInput" onkeyup="entSearch()" style="float:right; border-radius: 5px; padding: 3px 20px 3px 3px; width: 350px; font-size: large; font-family: 'KoHo'; margin-right: 70px;" placeholder="Search entities...">
+        <input class="search" type="text" id="entInput" onkeyup="entSearch()" placeholder="Search entities...">
 
         <div class="wrapper" style="margin-top: 10px;">
         <table id="entTable" style="border-collapse: collapse; width: 100%; table-layout: fixed; border-spacing: 0px 10px;">
@@ -65,21 +65,21 @@
 
 
 
-
+                    <td style="text-align: center;">
                     {% if entity.sensitivity == 1  %}
-                        <td class="sensitivity1" style="display: table-cell; text-align: center; margin-top: 3px;">
+                        <div class="sensitivity1">
                             Low Sensitivity
-                        </td>
+                        </div>
                     {% elif entity.sensitivity == 2  %}
-                        <td class="sensitivity2" style="display: table-cell; text-align: center">
+                        <div class="sensitivity2">
                             Moderate Sensitivity
-                        </td>
+                        </div>
                     {% elif entity.sensitivity == 3  %}
-                        <td class="sensitivity3" style="display: table-cell; text-align: center">
+                        <div class="sensitivity3">
                             High Sensitivity
-                        </td>
+                        </div>
                     {% endif %}
-
+                    </td>
 
                     <td style="float:right; padding-right: 60px;">
                     <a href="/delete_entity/{{entity.slug}}/" onclick="return confirm('Are you sure?')">
