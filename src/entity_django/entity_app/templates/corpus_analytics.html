@@ -6,102 +6,118 @@
     <meta charset="UTF-8">
     <link href='https://fonts.googleapis.com/css?family=KoHo' rel='stylesheet'>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+
     <title>Sensitivity Detection Tool</title>
 </head>
 <body>
 
-
-
-<div class="sidenav">
-        <div onclick="history.back()" style="width: 60%; margin: 0px auto; padding-top: 15px;">
-        <div style="background-color: #4c0052; border-radius: 10px;">
-            <i class="material-icons" style="font-size:100px; color: white">arrow_back</i>
-            </div>
-        </div>
-    <div class="btn-group">
-        <a class="button" href="/home/">Homepage</a>
-        <a class="button" href="/upload_document/">Upload Documents</a>
-        <a class="button" href="/view_document/">View Documents</a>
-        <a class="button" href="/corpus_analytics">Corpus Analytics</a>
-    </div>
-</div>
-
 <div class="topnav">
-<a href="/home/">Sensitivity Detection Tool</a>
+    <a class="title" href="">Sensitivity Detection Tool</a>
+    <a href="/home">Home</a>
+    <a href="/view_document/">Documents</a>
+    <a href="/view_entity">Entities</a>
+    <a class="active" href="/corpus_analytics/">Analytics</a>
+    <a href="/upload_document/" class="upload" style="float: right;">Upload Files<i class="material-icons">upload</i></a>
 </div>
 
 <div class="main">
-<h1>Corpus Analytics</h1>
-    <h2>LDA Topic Modelling</h2>
-
-    <a class="doc-analyse-link"  href="/regenerate_lda/" style="padding-left: 180px;" onclick="return confirm('Are you sure? This may be a time consuming process.')">
-        <button class="document-button" >
-        <i class="material-icons" style="font-size:15px;">restart_alt</i>Regenerate Topics
-            </button>
+    <h1 style="display: inline;">Topic Modelling</h1>
+    <a class="doc-analyse-link"  style="display: inline; float: right;" href="/regenerate_lda/" onclick="return confirm('Are you sure? This may be a time consuming process.')">
+        <button class="document-button-icon" style="padding: 7px 10px 7px 10px;">
+            <i class="material-icons" style="font-size:15px;">restart_alt</i>Regenerate Topics
+        </button>
     </a>
+    <br>
 
 
-        <table style="border-collapse: collapse;">
-            {% for topic in topics %}
-                <tr>
-                    <th>Topic {{forloop.counter}} - Sensitivity: xyz%</th>
-                </tr>
+    {% for topic, topic_title in topics %}
+        {% if not forloop.counter|divisibleby:2 %}
+        <div class="wrapper-analytics">
+            <canvas id="{{forloop.counter}}" style="width: 450px; float: left; padding-right: 20px;"></canvas>
 
-                <tr>
-                    <th style="float: left;">Entity</th>
-                    <th>Weighting</th>
-                    <th></th>
-                    <th>Related Documents</th>
-                </tr>
+            <script>
+            var xValues{{forloop.counter|safe}} = {{topic.3|safe}};
+            var yValues = {{topic.1|safe}};
+            var barColors = {{topic.2|safe}};
+            var slugs{{forloop.counter|safe}} = {{topic.4|safe}};
 
+            function graphClickEvent(event, array) {
+                var firstPoint = this.getElementAtEvent(event)[0];
+                if (firstPoint) {
+                    let index = xValues{{forloop.counter}}.indexOf(firstPoint._model.label);
+                    window.location.href='/view_entity/'+slugs{{forloop.counter|safe}}[index];
+                }
+            }
 
-                {% for topic_word, topic_document in topic %}
-                    <tr style="border-bottom: 1pt solid #DFDFDF;">
-                        <td style="padding-right: 50px;">
-                            {% if topic_word.entityID.sensitivity == 1 %}
-                                <div class="sensitivity1">{{ topic_word.entityID.text }}</div>
-                            {% elif topic_word.entityID.sensitivity == 2 %}
-                                <div class="sensitivity2">{{ topic_word.entityID.text }}</div>
-                            {% elif topic_word.entityID.sensitivity == 3 %}
-                                <div class="sensitivity3">{{ topic_word.entityID.text }}</div>
-                            {% endif %}
-                        </td>
+            new Chart("{{forloop.counter}}", {
+              type: "doughnut",
+              data: {
+                labels: xValues{{forloop.counter}},
+                datasets: [{
+                  backgroundColor: barColors,
+                  data: yValues,
+                }]
+              },
+              options: {
+                onClick: graphClickEvent,
+                legend: {
+                    display: false,
+                },
+                responsive: false,
+                title: {
+                  display: true,
+                  text: "Distribution of Topic: {{topic_title|safe}}"
+                }
+              },
+              plugins: []
+            });
+            </script>
+            <div style="padding: 100px 0px 0px 40px;">
 
-                        <td>
-                            {{topic_word.weight}}
-                        </td>
-
-                        <td style="border-right: 1pt solid #DFDFDF; padding-right: 30px;"></td>
-
-                        <td>
-                            {{topic_document.documentID.filetitle}}
-                        </td>
-
-                        <td>
-                            <a href="/view_document/{{topic_document.documentID.documentID}}">
-                                <button class="document-button-icon">
-                                    <i class="material-icons" style="font-size:15px;">search</i>
-                                </button>
-                            </a>
-                        </td>
-
-                    </tr>
+                {% for label in topic.3 %}
+                   <p style="word-wrap: break-word; font-weight: bold;">{{label}}</p>
                 {% endfor %}
-                <tr>
-                    <td> </td>
-                    <td> </td>
-                </tr>
-                <tr>
-                    <td> </td>
-                    <td> </td>
-                </tr>
-                <tr>
-                    <td> </td>
-                    <td> </td>
+            </div>
+        </div>
+
+        {% else %}
+        <div class="wrapper-analytics">
+            <h2 style="padding: 0px; margin: 0px; padding-bottom: 5px;">Related Documents:</h2>
+            <table style="width: 100%; border-collapse: collapse;">
+                {% for topic_doc in topic %}
+                <tr style="border-radius: 5px; border-top: 1pt solid #DFDFDF;">
+                    <td>
+                        <div onclick="window.location.href='/view_document/{{ent_doc.documentID}}/'" style="padding: 0px 2px 0px 2px;">{{topic_doc.documentID.filetitle}}</div>
+                    </td>
+
+                    <td style="float:right; padding-right: 0px;">
+                    <a href="/delete_document/{{ent_doc.documentID}}/" onclick="return confirm('Are you sure?')">
+                        <button class="document-button-icon">
+                            <i class="material-icons" style="font-size:15px;">delete</i>
+                        </button>
+                    </a>
+                    </td>
+
+                    <td style="float:right;">
+                    <a href="/view_document/{{ent_doc.documentID}}/">
+                        <button class="document-button-icon">
+                            <i class="material-icons" style="font-size:15px;">search</i>
+                        </button>
+                    </a>
+                    </td>
+
                 </tr>
 
-            {% endfor %}
-        </table>
+                {% endfor %}
+            </table>
+
+
+        </div>
+        {% endif %}
+
+    {% endfor %}
+
 </div>
 
 </body>

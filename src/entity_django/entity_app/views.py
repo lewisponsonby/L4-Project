@@ -18,6 +18,9 @@ from nltk.corpus import stopwords
 import re
 import gensim.corpora as corpora
 import gensim
+import pandas as pd
+import numpy as np
+from sklearn.feature_extraction.text import CountVectorizer
 # Create your views here.
 
 
@@ -146,16 +149,47 @@ def corpus_analytics(request):
     topics=[]
 
     max_topics=TopicWord.objects.all().order_by('-topicNumber')[0].topicNumber
-
+    combined_topics=[]
     for i in range(1,max_topics+1):
         topic_words=list(TopicWord.objects.filter(topicNumber=i).order_by('-weight'))
         topic_docs=list(TopicDocument.objects.filter(topicNumber=i).order_by('-weight'))
-        topics.append(zip(topic_words,topic_docs))
+
+        combined=""
+        for word in topic_words:
+            combined+=word.entityID.abstract+" "
+        combined_topics.append(combined)
+
+        if len(topic_words)>7:
+            topic_words = topic_words[:7]
+        colors=[]
+        weights=[]
+        names=[]
+        slugs=[]
+        for word in topic_words:
+            if word.entityID.sensitivity==1:
+                colors.append('green')
+            elif word.entityID.sensitivity==2:
+                colors.append('orange')
+            elif word.entityID.sensitivity==3:
+                colors.append('red')
+            else:
+                colors.append('grey')
+            weights.append(word.weight)
+            names.append(word.entityID.text)
+            slugs.append(word.entityID.slug)
 
 
+
+        topics.append([topic_words,weights,colors,names,slugs])
+        topics.append(topic_docs)
+
+
+    tf_idf, count = c_tf_idf(combined_topics, m=len(combined_topics))
+
+    topic_titles = extract_top_n_words_per_topic(tf_idf, count, combined_topics, n=3)
 
     context = {
-        'topics' : topics,
+        'topics' : zip(topics,topic_titles),
     }
     return HttpResponse(template.render(context, request))
 
@@ -266,6 +300,7 @@ def split_entities(docid,doc):
 
 def generateLDA(n_topics=8,n_words=5):
     TopicWord.objects.all().delete()
+    TopicDocument.objects.all().delete()
     tokens = []
     docs = list(Document.objects.values_list('tokens', flat=True))
     for doc in docs:
@@ -288,10 +323,10 @@ def generateLDA(n_topics=8,n_words=5):
                                                chunksize=10,
                                                passes=100,
                                                alpha='auto',
-                                               iterations=200,
+                                               iterations=300,
                                                per_word_topics=True)
 
-    topics = lda_model.show_topics(num_topics=n_topics, num_words=n_words, formatted=True)
+    topics = lda_model.show_topics(num_topics=n_topics, num_words=50, formatted=True)
 
     for index, topic in enumerate(topics):
         topic_split=topic[1].split("+")
@@ -309,6 +344,7 @@ def generateLDA(n_topics=8,n_words=5):
 
 
     all_topics=lda_model.print_topics()
+    lda_model.print_topics()
     docs_per_topic = [[] for _ in all_topics]
 
     for doc_id, doc_bow in enumerate(corpus):
@@ -320,14 +356,32 @@ def generateLDA(n_topics=8,n_words=5):
         doc_list.sort(key=lambda id_and_score: id_and_score[1], reverse=True)
 
     for topic_num in range(n_topics):
-        for doc_num in range(n_words):
-            print(topic_num,doc_num)
+        for doc_num in range(12):
             doc_json = json.dumps(data_words[docs_per_topic[topic_num][doc_num][0]])
             doc_weight = docs_per_topic[topic_num][doc_num][1]
             top_document = Document.objects.filter(tokens=doc_json)[0]
             topicDocument = TopicDocument.objects.create(documentID=top_document, topicNumber=topic_num+1, weight=doc_weight)
 
 
+def c_tf_idf(documents, m, ngram_range=(1, 1)):
+    count = CountVectorizer(ngram_range=ngram_range, stop_words="english").fit(documents)
+    t = count.transform(documents).toarray()
+    w = t.sum(axis=1)
+    tf = np.divide(t.T, w)
+    sum_t = t.sum(axis=0)
+    idf = np.log(np.divide(m, sum_t)).reshape(-1, 1)
+    tf_idf = np.multiply(tf, idf)
+    return tf_idf, count
 
-
-
+def extract_top_n_words_per_topic(tf_idf, count, docs_per_topic, n):
+    words = count.get_feature_names()
+    labels = [1,2,3,4,5,6,7,8]
+    tf_idf_transposed = tf_idf.T
+    indices = tf_idf_transposed.argsort()[:, -n:]
+    top_n_words = {label: [(words[j], tf_idf_transposed[i][j]) for j in indices[i]][::-1] for i, label in enumerate(labels)}
+    top_n_words=list(top_n_words.values())
+    topic_titles=[]
+    for topic in top_n_words:
+        topic_titles.append(topic[0][0]+"-"+topic[1][0]+"-"+topic[2][0])
+        topic_titles.append("")
+    return topic_titles
