@@ -28,10 +28,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 
 def home(request):
     template = loader.get_template('home.html')
-    documents = Document.objects.all().values()
-
     context = {
-        'documents': documents,
     }
     return HttpResponse(template.render(context, request))
 
@@ -200,6 +197,13 @@ def regenerate_lda(request):
 
 def delete_document(request, docid):
     Document.objects.filter(documentID=docid).delete()
+
+    return HttpResponseRedirect(reverse(home))
+
+def delete_entity(request, entid):
+    to_delete=Entity.objects.filter(slug=entid)
+    print(to_delete)
+    to_delete.delete()
     return HttpResponseRedirect(reverse(home))
 
 def add_document(request):
@@ -245,9 +249,10 @@ def analyse_document(document):
             entity = Entity.objects.create(entityID=URL, abstract=abstract, text=URL.replace("http://dbpedia.org/resource/","").replace("_"," "), slug=URL.replace("http://dbpedia.org/resource/",""))
             test_feature=fitted_vectorizer.transform([entity.abstract])
             predicted=fitted_model.predict_proba(test_feature)
-            if predicted[0][1]<0.5:
+            print(entity.text,predicted)
+            if predicted[0][1]<0.4:
                 entity.sensitivity=1
-            elif 0.5<=predicted[0][1]<0.8:
+            elif 0.4<=predicted[0][1]<0.8:
                 entity.sensitivity=2
             elif predicted[0][1]>=0.8:
                 entity.sensitivity=3
@@ -385,3 +390,19 @@ def extract_top_n_words_per_topic(tf_idf, count, docs_per_topic, n):
         topic_titles.append(topic[0][0]+"-"+topic[1][0]+"-"+topic[2][0])
         topic_titles.append("")
     return topic_titles
+
+def repredictEntities():
+    fitted_model=pickle.load(open('C:/Users/User/OneDrive - University of Glasgow/University Year 4/Individual Project/2464980P-L4-Project/src/entity_django/entity_app/classifier.pkl', 'rb'))
+    fitted_vectorizer=pickle.load(open('C:/Users/User/OneDrive - University of Glasgow/University Year 4/Individual Project/2464980P-L4-Project/src/entity_django/entity_app/vectorizer.pkl', 'rb'))
+
+    for entity in Entity.objects.all():
+        test_feature = fitted_vectorizer.transform([entity.abstract])
+        predicted = fitted_model.predict_proba(test_feature)
+        print(predicted)
+        if predicted[0][1] < 0.4:
+            entity.sensitivity = 1
+        elif 0.4 <= predicted[0][1] < 0.8:
+            entity.sensitivity = 2
+        elif predicted[0][1] >= 0.8:
+            entity.sensitivity = 3
+        entity.save()

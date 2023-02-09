@@ -22,6 +22,7 @@ urlpatterns = [
     path('upload_document/', views.upload_document, name='upload.html'),
     path('upload_document/add_document/', views.add_document, name='add_document'),
     path('delete_document/<str:docid>/', views.delete_document, name='docid'),
+    path('delete_entity/<str:entid>/', views.delete_entity, name='entid'),
     path('regenerate_lda/', views.regenerate_lda, name='regenerate_lda'),
     path('admin/', admin.site.urls),
     path('view_document/', views.list_documents, name='list_documents.html'),
