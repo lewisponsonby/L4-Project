@@ -1,0 +1,20 @@
+2023-02-15 23:35:47 Homepage
+2023-02-15 23:35:49 Homepage
+2023-02-15 23:40:12 ListDocuments
+2023-02-15 23:40:13 ListEntities
+2023-02-15 23:40:17 CorpusAnalytics
+2023-02-15 23:40:19 UploadDocument
+2023-02-15 23:40:21 Homepage
+2023-02-15 23:40:22 ListDocuments
+2023-02-15 23:40:23 ListEntities
+2023-02-15 23:40:27 ViewEntity:Hashemite_(mineral)
+2023-02-15 23:40:30 ViewDocument:d114b03d-2fbc-443e-b635-68e630c2c438
+2023-02-15 23:40:34 ViewEntity:Gambling
+2023-02-15 23:41:56 Home
+2023-02-15 23:41:58 ListDocuments
+2023-02-15 23:42:01 ViewDocument e7d2ceb7-7182-4c40-a716-7fc245a11d67
+2023-02-15 23:42:04 ViewEntity Kuwait
+2023-02-15 23:42:07 ViewDocument e95694e3-3844-49e9-84fd-523d0a8ea918
+2023-02-15 23:42:11 ViewEntity United_Arab_Emirates
+2023-02-15 23:42:14 CorpusAnalytics
+2023-02-15 23:42:16 UploadDocument

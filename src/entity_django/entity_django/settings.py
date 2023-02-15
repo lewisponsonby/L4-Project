@@ -68,6 +68,8 @@ TEMPLATES = [
     },
 ]
 
+
+
 WSGI_APPLICATION = 'entity_django.wsgi.application'
 
 

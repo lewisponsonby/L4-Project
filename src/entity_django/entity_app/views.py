@@ -21,85 +21,99 @@ import gensim
 import pandas as pd
 import numpy as np
 from sklearn.feature_extraction.text import CountVectorizer
-# Create your views here.
+from datetime import datetime
 
 
 
+def home(request): # Homepage
+    with open("ServerLog.txt", "a+") as ServerLog:
+        ServerLog.write(str(datetime.now())[:19]+" Home\n")
 
-def home(request):
-    template = loader.get_template('home.html')
+    template = loader.get_template('home.html') # Retrieve template for homepage
     context = {
     }
-    return HttpResponse(template.render(context, request))
+    return HttpResponse(template.render(context, request)) # Render template & context
 
-def list_documents(request):
-    template = loader.get_template('list_documents.html')
-    documents = Document.objects.all()[:50]
+def list_documents(request): # List Documents
+    with open("ServerLog.txt", "a+") as ServerLog:
+        ServerLog.write(str(datetime.now())[:19]+" ListDocuments\n")
+
+
+    template = loader.get_template('list_documents.html') # Retrieve template for list documents page
+    documents = Document.objects.all()[:50] # Retrieve all documents to be listed (capped at fifty during development)
 
     top_entities=[]
-    for doc in documents:
-        instances=list(Instance.objects.filter(documentID=doc).values_list('entityID', flat=True))
-        entities=Entity.objects.filter(entityID__in=instances).order_by('-sensitivity')
-
+    for doc in documents: # For each document
+        instances=list(Instance.objects.filter(documentID=doc).values_list('entityID', flat=True)) # Get all entity instances in document
+        entities=Entity.objects.filter(entityID__in=instances).order_by('-sensitivity') # Get all distinct entities featuring in document and sort by sensitivity
         ent_urls = [entity.text for entity in entities]
         top_entities.append(zip(entities, ent_urls))
 
 
     context = {
-        'documents': zip(documents,top_entities),
+        'documents': zip(documents,top_entities), # Pass document & corresponding top entities as context
     }
-    return HttpResponse(template.render(context, request))
+    return HttpResponse(template.render(context, request)) # Render template & context
 
 
-def list_entities(request):
-    template = loader.get_template('list_entities.html')
-    entities = Entity.objects.all()[:50]
+def list_entities(request): # List Entities
+    with open("ServerLog.txt", "a+") as ServerLog:
+        ServerLog.write(str(datetime.now())[:19]+" ListEntities\n")
+
+    template = loader.get_template('list_entities.html') # Retrieve list entities template
+    entities = Entity.objects.all()[:50] # Retrieve all entities (capped at fifty during development)
     ent_docs=[]
-    for entity in entities:
-        ent_docids = Instance.objects.filter(entityID=entity).values_list('documentID', flat=True)
-        ent_docs.append(list(set(Document.objects.filter(documentID__in=ent_docids))))
+    for entity in entities: # For each entity
+        ent_docids = Instance.objects.filter(entityID=entity).values_list('documentID', flat=True) # Retrieve all documents it appears in
+        ent_docs.append(list(set(Document.objects.filter(documentID__in=ent_docids)))) # Record the Document IDs
 
     context = {
-        'entities': zip(entities,ent_docs),
+        'entities': zip(entities,ent_docs), # Pass entity & corresponding documents as context
     }
-    return HttpResponse(template.render(context, request))
+    return HttpResponse(template.render(context, request)) # Render template & context
 
-def view_entity(request, entid):
-    template = loader.get_template('entity.html')
-    ent = Entity.objects.filter(slug=entid)[0]
+def view_entity(request, entid): # View Individual Entity
+    with open("ServerLog.txt", "a+") as ServerLog:
+        ServerLog.write(str(datetime.now())[:19]+" ViewEntity "+str(entid)+"\n")
+
+    template = loader.get_template('entity.html') # Retrieve individual entity template
+    ent = Entity.objects.filter(slug=entid)[0] # Retrieve the entity's slug
     ent_docids = Instance.objects.filter(entityID=ent).values_list('documentID', flat=True)
-    ent_docs=(list(set(Document.objects.filter(documentID__in=ent_docids))))
+    ent_docs=(list(set(Document.objects.filter(documentID__in=ent_docids)))) # Retrieve all IDs of the documents the entity appears in
     context = {
-        'ent' : ent,
-        'ent_docs' : ent_docs,
+        'ent' : ent, # Pass the entity's slug
+        'ent_docs' : ent_docs, # and its corresponding documents as context
     }
-    return HttpResponse(template.render(context, request))
+    return HttpResponse(template.render(context, request)) # Render template & context
 
-def upload_document(request):
-    template = loader.get_template('upload.html')
-    documents = Document.objects.all().values()
+def upload_document(request): #Upload Document
+    with open("ServerLog.txt", "a+") as ServerLog:
+        ServerLog.write(str(datetime.now())[:19]+" UploadDocument\n")
+
+    template = loader.get_template('upload.html') # Retrieve document upload template
     context = {
-        'documents' : documents,
     }
-    return HttpResponse(template.render(context, request))
+    return HttpResponse(template.render(context, request)) # Render template & context
 
-def view_document(request, docid):
-    documents = Document.objects.all().values()
-    doc = Document.objects.filter(documentID=docid)[0]
-    indexed = split_entities(docid,doc)
-    template = loader.get_template('documents.html')
+def view_document(request, docid): # View Individual Entity
+    with open("ServerLog.txt", "a+") as ServerLog:
+        ServerLog.write(str(datetime.now())[:19]+" ViewDocument "+str(docid)+"\n")
 
-    instances = Instance.objects.filter(documentID=docid)
+    doc = Document.objects.filter(documentID=docid)[0] # Retrieve the current document instance
+    indexed = split_entities(docid,doc) # Retrieve the document split from its entities
+    template = loader.get_template('documents.html') # Retrieve the view document template
+
+    instances = Instance.objects.filter(documentID=docid) # Retrieve all entity instances for the current document
     entities = []
     colors = {}
 
-    for instance in instances:
+    for instance in instances: # For each entity instance
         entity_name = instance.entityID.text
-        entities.append(entity_name)
-        colors[entity_name] = instance.entityID.sensitivity
+        entities.append(entity_name) # Record distinct entities
+        colors[entity_name] = instance.entityID.sensitivity # and their sensitivities
 
-    counter = dict(Counter(entities).most_common(7))
-    color = [colors[key] for key in counter.keys()]
+    counter = dict(Counter(entities).most_common(7)) # Record the most common entities ( top 7 )
+    color = [colors[key] for key in counter.keys()] # Create a list of sensitivities of the most common entities
     for i in range(len(color)):
         if color[i] == 1:
             color[i] = 'green'
@@ -109,6 +123,7 @@ def view_document(request, docid):
 
         if color[i] == 3:
             color[i] = 'red'
+        ## Change sensitivities for colours
 
     counter_ = dict(Counter(entities))
     color_ = [colors[key] for key in counter_.keys()]
@@ -139,7 +154,10 @@ def view_document(request, docid):
     }
     return HttpResponse(template.render(context, request))
 
-def corpus_analytics(request):
+def corpus_analytics(request): # Corpus Analytics
+    with open("ServerLog.txt", "a+") as ServerLog:
+        ServerLog.write(str(datetime.now())[:19]+" CorpusAnalytics\n")
+
     template = loader.get_template('corpus_analytics.html')
     if not TopicWord.objects.all():
         generateLDA()
@@ -190,23 +208,31 @@ def corpus_analytics(request):
     }
     return HttpResponse(template.render(context, request))
 
-def regenerate_lda(request):
+def regenerate_lda(request): # Regenerating LDA Topics
+    with open("ServerLog.txt", "a+") as ServerLog:
+        ServerLog.write(str(datetime.now())[:19]+" RegenerateLDA\n")
     generateLDA(8,7)
     print("regenerated")
     return HttpResponseRedirect(reverse(corpus_analytics))
 
-def delete_document(request, docid):
+def delete_document(request, docid): # Delete Document
+    with open("ServerLog.txt", "a+") as ServerLog:
+        ServerLog.write(str(datetime.now())[:19]+" DeleteDocument "+str(docid)+"\n")
+
     Document.objects.filter(documentID=docid).delete()
-
     return HttpResponseRedirect(reverse(home))
 
-def delete_entity(request, entid):
-    to_delete=Entity.objects.filter(slug=entid)
-    print(to_delete)
-    to_delete.delete()
+def delete_entity(request, entid): # Delete Entity
+    with open("ServerLog.txt", "a+") as ServerLog:
+        ServerLog.write(str(datetime.now())[:19]+" DeleteEntity "+str(entid)+"\n")
+
+    Entity.objects.filter(slug=entid).delete()
     return HttpResponseRedirect(reverse(home))
 
-def add_document(request):
+def add_document(request): # Processing document upload
+    with open("ServerLog.txt", "a+") as ServerLog:
+        ServerLog.write(str(datetime.now())[:19]+" ProcessDocumentUpload\n")
+
     if request.method == 'POST':
         for file2 in request.FILES.getlist('file'):
             file = File.objects.create(txtfile=file2)
@@ -233,9 +259,9 @@ def add_document(request):
                 document.save()
     return HttpResponseRedirect(reverse(home))
 
-def analyse_document(document):
-    fitted_model=pickle.load(open('C:/Users/User/OneDrive - University of Glasgow/University Year 4/Individual Project/2464980P-L4-Project/src/entity_django/entity_app/classifier.pkl', 'rb'))
-    fitted_vectorizer=pickle.load(open('C:/Users/User/OneDrive - University of Glasgow/University Year 4/Individual Project/2464980P-L4-Project/src/entity_django/entity_app/vectorizer.pkl', 'rb'))
+def analyse_document(document): # Analysing document for entities and creating instances
+    fitted_model=pickle.load(open('classifier.pkl', 'rb'))
+    fitted_vectorizer=pickle.load(open('vectorizer.pkl', 'rb'))
 
     entities=entityTagger(document.text)
     documentID=document.documentID
@@ -271,7 +297,7 @@ def analyse_document(document):
     return 1
 
 
-def split_entities(docid,doc):
+def split_entities(docid,doc): # Splitting documents into entities for HTML display
     instances=Instance.objects.filter(documentID=docid).order_by('start')
     text=doc.text
     indexed=[]
@@ -303,7 +329,7 @@ def split_entities(docid,doc):
     return zip(indexed, abstracts, colors, ent_ids)
 
 
-def generateLDA(n_topics=8,n_words=5):
+def generateLDA(n_topics=8,n_words=5): # Regenerating LDA Topics
     TopicWord.objects.all().delete()
     TopicDocument.objects.all().delete()
     tokens = []
@@ -311,8 +337,6 @@ def generateLDA(n_topics=8,n_words=5):
     for doc in docs:
         if doc != None:
             tokens.append(doc)
-
-
 
     jsonDec = json.decoder.JSONDecoder()
     data_words = [jsonDec.decode(doc) for doc in tokens]
@@ -368,7 +392,7 @@ def generateLDA(n_topics=8,n_words=5):
             topicDocument = TopicDocument.objects.create(documentID=top_document, topicNumber=topic_num+1, weight=doc_weight)
 
 
-def c_tf_idf(documents, m, ngram_range=(1, 1)):
+def c_tf_idf(documents, m, ngram_range=(1, 1)): # Creating TF-IDF counts for each document (entity abstract)
     count = CountVectorizer(ngram_range=ngram_range, stop_words="english").fit(documents)
     t = count.transform(documents).toarray()
     w = t.sum(axis=1)
@@ -378,7 +402,7 @@ def c_tf_idf(documents, m, ngram_range=(1, 1)):
     tf_idf = np.multiply(tf, idf)
     return tf_idf, count
 
-def extract_top_n_words_per_topic(tf_idf, count, docs_per_topic, n):
+def extract_top_n_words_per_topic(tf_idf, count, docs_per_topic, n): # Extracting the top words for each topic
     words = count.get_feature_names()
     labels = [1,2,3,4,5,6,7,8]
     tf_idf_transposed = tf_idf.T
@@ -391,9 +415,9 @@ def extract_top_n_words_per_topic(tf_idf, count, docs_per_topic, n):
         topic_titles.append("")
     return topic_titles
 
-def repredictEntities():
-    fitted_model=pickle.load(open('C:/Users/User/OneDrive - University of Glasgow/University Year 4/Individual Project/2464980P-L4-Project/src/entity_django/entity_app/classifier.pkl', 'rb'))
-    fitted_vectorizer=pickle.load(open('C:/Users/User/OneDrive - University of Glasgow/University Year 4/Individual Project/2464980P-L4-Project/src/entity_django/entity_app/vectorizer.pkl', 'rb'))
+def repredictEntities(): # Repredicting all entities (for admin use)
+    fitted_model=pickle.load(open('classifier.pkl', 'rb'))
+    fitted_vectorizer=pickle.load(open('vectorizer.pkl', 'rb'))
 
     for entity in Entity.objects.all():
         test_feature = fitted_vectorizer.transform([entity.abstract])
