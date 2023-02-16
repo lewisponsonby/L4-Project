@@ -132,20 +132,30 @@ def view_document(request, docid): # View Individual Entity
     color_vals = list(map(lambda x: str(x).replace('1', 'green').replace('2','orange').replace('3','red'), list(color_counter.keys())))
     color_keys = list(map(lambda x: str(x).replace('green', 'Low Sensitivity Entites').replace('orange', 'Moderate Sensitivity Entities').replace('red', 'High Sensitivity Entities'), color_vals))
 
-    fig_ents=list((counter.keys()))
-    fig_freqs=list((counter.values()))
-    colors=list((color))
+    inst_entids = Instance.objects.filter(documentID=docid).values_list('entityID', flat=True)
+    inst_entids = list(set(Entity.objects.filter(entityID__in=inst_entids)))
+    inst_entids = sorted(inst_entids, key=lambda ent: ent.sensitivity, reverse=True)
+    inst_ents = [inst_entid.text for inst_entid in inst_entids]
 
-    print(color_freqs,color_vals,color_keys)
-    print(color_counter)
+    for instance in instances: # For each entity instance
+        entity_name = instance.entityID.text
+        entities.append(entity_name) # Record distinct entities
+        colors[entity_name] = instance.entityID.sensitivity # and their sensitivities
 
-
+    counter = dict(Counter(entities))
+    fig_freqs = [counter[inst_ent] for inst_ent in inst_ents ]
+    color_dict = {1: 'green', 2: 'orange', 3: 'red'}
+    colors = [color_dict[inst_entid.sensitivity] for inst_entid in inst_entids] # Create a list of sensitivities of the most common entities
+    if len(fig_freqs)>10:
+        fig_freqs=fig_freqs[:10]
+        colors=colors[:10]
+        inst_ents=inst_ents[:10]
 
     context = {
         'docid': docid,
         'doc': doc,
         'indexed' : indexed,
-        'fig_ents' : fig_ents,
+        'fig_ents' : inst_ents,
         'fig_freqs' : fig_freqs,
         'color' : colors,
         'color_freqs' : color_freqs,
