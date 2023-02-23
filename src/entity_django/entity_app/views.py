@@ -17,16 +17,18 @@ import nltk
 from nltk.corpus import stopwords
 import re
 import gensim.corpora as corpora
+import random
 import gensim
 import pandas as pd
 import numpy as np
 from sklearn.feature_extraction.text import CountVectorizer
 from datetime import datetime
 
-
+global LOG_ID
+LOG_ID="ServerLog.txt"
 
 def home(request): # Homepage
-    with open("ServerLog.txt", "a+") as ServerLog:
+    with open(LOG_ID, "a+") as ServerLog:
         ServerLog.write(str(datetime.now())[:19]+" Home\n")
 
     template = loader.get_template('home.html') # Retrieve template for homepage
@@ -34,8 +36,33 @@ def home(request): # Homepage
     }
     return HttpResponse(template.render(context, request)) # Render template & context
 
+
+def user_study(request): # Homepage
+    with open(LOG_ID, "a+") as ServerLog:
+        ServerLog.write(str(datetime.now())[:19]+" UserStudy\n")
+
+    template = loader.get_template('user_study.html') # Retrieve template for user study page
+    context = {
+    }
+    return HttpResponse(template.render(context, request)) # Render template & context
+
+def add_qanswer(request,qid): # Processing answer upload
+    if request.method == 'POST':
+        print(request.POST)
+        try:
+            global LOG_ID
+            LOG_ID=request.POST["LOG_ID"]
+            with open(LOG_ID, "a+") as ServerLog:
+                ServerLog.write(LOG_ID+" START\n")
+        except:
+            answer = request.POST[qid]
+            with open(LOG_ID, "a+") as ServerLog:
+                ServerLog.write(str(datetime.now())[:19] + " "+qid+":"+answer+"\n")
+    return HttpResponseRedirect(reverse(user_study))
+
 def list_documents(request): # List Documents
-    with open("ServerLog.txt", "a+") as ServerLog:
+    global LOG_ID
+    with open(LOG_ID, "a+") as ServerLog:
         ServerLog.write(str(datetime.now())[:19]+" ListDocuments\n")
 
 
@@ -57,11 +84,13 @@ def list_documents(request): # List Documents
 
 
 def list_entities(request): # List Entities
-    with open("ServerLog.txt", "a+") as ServerLog:
+    global LOG_ID
+    with open(LOG_ID, "a+") as ServerLog:
         ServerLog.write(str(datetime.now())[:19]+" ListEntities\n")
 
     template = loader.get_template('list_entities.html') # Retrieve list entities template
     entities = Entity.objects.all()[:50] # Retrieve all entities (capped at fifty during development)
+
     ent_docs=[]
     for entity in entities: # For each entity
         ent_docids = Instance.objects.filter(entityID=entity).values_list('documentID', flat=True) # Retrieve all documents it appears in
@@ -73,8 +102,9 @@ def list_entities(request): # List Entities
     return HttpResponse(template.render(context, request)) # Render template & context
 
 def view_entity(request, entid): # View Individual Entity
-    with open("ServerLog.txt", "a+") as ServerLog:
-        ServerLog.write(str(datetime.now())[:19]+" ViewEntity "+str(entid)+"\n")
+    global LOG_ID
+    with open(LOG_ID, "a+") as ServerLog:
+        ServerLog.write(str(datetime.now())[:19]+" ViewEntity:"+str(entid)+"\n")
 
     template = loader.get_template('entity.html') # Retrieve individual entity template
     ent = Entity.objects.filter(slug=entid)[0] # Retrieve the entity's slug
@@ -87,7 +117,8 @@ def view_entity(request, entid): # View Individual Entity
     return HttpResponse(template.render(context, request)) # Render template & context
 
 def upload_document(request): #Upload Document
-    with open("ServerLog.txt", "a+") as ServerLog:
+    global LOG_ID
+    with open(LOG_ID, "a+") as ServerLog:
         ServerLog.write(str(datetime.now())[:19]+" UploadDocument\n")
 
     template = loader.get_template('upload.html') # Retrieve document upload template
@@ -96,12 +127,14 @@ def upload_document(request): #Upload Document
     return HttpResponse(template.render(context, request)) # Render template & context
 
 def view_document(request, docid): # View Individual Entity
-    with open("ServerLog.txt", "a+") as ServerLog:
-        ServerLog.write(str(datetime.now())[:19]+" ViewDocument "+str(docid)+"\n")
+    global LOG_ID
 
     doc = Document.objects.filter(documentID=docid)[0] # Retrieve the current document instance
     indexed = split_entities(docid,doc) # Retrieve the document split from its entities
     template = loader.get_template('documents.html') # Retrieve the view document template
+
+    with open(LOG_ID, "a+") as ServerLog:
+        ServerLog.write(str(datetime.now())[:19]+" ViewDocument:"+str(doc.filetitle)+"\n")
 
     instances = Instance.objects.filter(documentID=docid) # Retrieve all entity instances for the current document
     entities = []
@@ -112,7 +145,7 @@ def view_document(request, docid): # View Individual Entity
         entities.append(entity_name) # Record distinct entities
         colors[entity_name] = instance.entityID.sensitivity # and their sensitivities
 
-    counter = dict(Counter(entities).most_common(7)) # Record the most common entities ( top 7 )
+    counter = dict(Counter(entities)) # Record the most common entities ( top 7 )
     color = [colors[key] for key in counter.keys()] # Create a list of sensitivities of the most common entities
     for i in range(len(color)):
         if color[i] == 1:
@@ -142,7 +175,9 @@ def view_document(request, docid): # View Individual Entity
         entities.append(entity_name) # Record distinct entities
         colors[entity_name] = instance.entityID.sensitivity # and their sensitivities
 
-    counter = dict(Counter(entities))
+    instances_ = Instance.objects.filter(documentID=docid)
+    instances_ = [inst.entityID.text for inst in instances_]
+    counter = dict(Counter(instances_))
     fig_freqs = [counter[inst_ent] for inst_ent in inst_ents ]
     color_dict = {1: 'green', 2: 'orange', 3: 'red'}
     colors = [color_dict[inst_entid.sensitivity] for inst_entid in inst_entids] # Create a list of sensitivities of the most common entities
@@ -165,7 +200,8 @@ def view_document(request, docid): # View Individual Entity
     return HttpResponse(template.render(context, request))
 
 def corpus_analytics(request): # Corpus Analytics
-    with open("ServerLog.txt", "a+") as ServerLog:
+    global LOG_ID
+    with open(LOG_ID, "a+") as ServerLog:
         ServerLog.write(str(datetime.now())[:19]+" CorpusAnalytics\n")
 
     template = loader.get_template('corpus_analytics.html')
@@ -219,28 +255,32 @@ def corpus_analytics(request): # Corpus Analytics
     return HttpResponse(template.render(context, request))
 
 def regenerate_lda(request): # Regenerating LDA Topics
-    with open("ServerLog.txt", "a+") as ServerLog:
+    global LOG_ID
+    with open(LOG_ID, "a+") as ServerLog:
         ServerLog.write(str(datetime.now())[:19]+" RegenerateLDA\n")
     generateLDA(8,7)
     print("regenerated")
     return HttpResponseRedirect(reverse(corpus_analytics))
 
 def delete_document(request, docid): # Delete Document
-    with open("ServerLog.txt", "a+") as ServerLog:
+    global LOG_ID
+    with open(LOG_ID, "a+") as ServerLog:
         ServerLog.write(str(datetime.now())[:19]+" DeleteDocument "+str(docid)+"\n")
 
     Document.objects.filter(documentID=docid).delete()
     return HttpResponseRedirect(reverse(home))
 
 def delete_entity(request, entid): # Delete Entity
-    with open("ServerLog.txt", "a+") as ServerLog:
+    global LOG_ID
+    with open(LOG_ID, "a+") as ServerLog:
         ServerLog.write(str(datetime.now())[:19]+" DeleteEntity "+str(entid)+"\n")
 
     Entity.objects.filter(slug=entid).delete()
     return HttpResponseRedirect(reverse(home))
 
 def add_document(request): # Processing document upload
-    with open("ServerLog.txt", "a+") as ServerLog:
+    global LOG_ID
+    with open(LOG_ID, "a+") as ServerLog:
         ServerLog.write(str(datetime.now())[:19]+" ProcessDocumentUpload\n")
 
     if request.method == 'POST':
@@ -330,12 +370,12 @@ def split_entities(docid,doc): # Splitting documents into entities for HTML disp
     indexed.append(text[prev:])
     started=False
     for item in indexed[0].split("\n"):
-        if "classified" in item or "unclassified" in item or "secret" in item or "confidential" in item:
-            if not started:
-                indexed[0]=""
-                started=True
-            elif started:
-                indexed[0]+=item
+        #if "classified" in item or "unclassified" in item or "secret" in item or "confidential" in item:
+        if not started:
+            indexed[0]=""
+            started=True
+        elif started:
+            indexed[0]+=item
     return zip(indexed, abstracts, colors, ent_ids)
 
 

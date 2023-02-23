@@ -19,6 +19,7 @@ from entity_app import views
 
 urlpatterns = [
     path('home/', views.home, name='home.html'),
+    path('user_study/', views.user_study, name='user_study.html'),
     path('upload_document/', views.upload_document, name='upload.html'),
     path('upload_document/add_document/', views.add_document, name='add_document'),
     path('delete_document/<str:docid>/', views.delete_document, name='docid'),
@@ -27,6 +28,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('view_document/', views.list_documents, name='list_documents.html'),
     path('view_document/<str:docid>/', views.view_document, name='docid'),
+    path('upload_answers/<str:qid>/', views.add_qanswer, name='qid'),
     path('view_entity/', views.list_entities, name='list_entities.html'),
     path('view_entity/<str:entid>/', views.view_entity, name='entid'),
     path('corpus_analytics/', views.corpus_analytics, name='corpus_analytics.html')

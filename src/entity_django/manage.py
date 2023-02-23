@@ -18,4 +18,6 @@ def main():
     execute_from_command_line(sys.argv)
 
 if __name__ == '__main__':
+    with open("ServerLog.txt", "a+") as ServerLog:
+        ServerLog.write("\n\nSERVER RESET\n\n")
     main()

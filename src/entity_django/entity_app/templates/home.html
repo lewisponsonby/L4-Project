@@ -16,23 +16,61 @@
         <a href="/view_document/">Documents</a>
         <a href="/view_entity/">Entities</a>
         <a href="/corpus_analytics/">Analytics</a>
+
+        <a style="width:200px; margin-left: 120px;" href="/user_study/"><div style="border-radius: 10px; background-image: linear-gradient(to top, #7b8fb0, #7b8fb0); padding: 2px 0px 2px 0px;">User Study</div></a>
+
         <a href="/upload_document/" class="upload" style="float: right;">Upload Files<i class="material-icons">upload</i></a>
     </div>
 
     <div class="main">
 
-            <h1>Background and Context</h1>
+        <h1>Background and Context</h1>
         <div class="wrapper">
-            <p>Numerous countries across the world integrate a freedom of information act into their countries laws.
-            A freedom of information act mandates the national government to disclose certain information upon request from countries occupants or following a period of time after the document's creation.
+            <p style="font-size: 17px; margin-left: 10px;">Numerous countries across the world integrate a 'freedom of information' act into their countries laws.
+            A 'freedom of information' act mandates the national government to disclose certain information upon request from countries occupants or following a period of time after the document's creation.
             Government documents may contain sensitive information such as personal details or trivial information that may harm a countries international relations.
             Sensitivity reviewers are employed by a countries government to perform sensitivity reviews to identify documents containing sensitive information and either redact individual details or restrict the document itself.
             </p>
         </div>
 
+        <h1>Guide for Usage</h1>
+        <div class="wrapper">
+            <h2 style="margin-left: 10px;">Uploading Files</h2>
+            <p style="font-size: 17px; margin-left: 20px;">
+                Visiting the <b>'Upload Files'</b> tab will allow you to upload and process documents for sensitivity review. When uploading files, singular or multiple file selections
+                are supported; a list of selected files can be viewed on the right hand tab of the page. The supported file type for file uploads is <b>.html.gz.</b> When submitting
+                files for upload, please remain on the same tab to ensure the documents are analysed and processed fully.
+            </p>
+            <h2 style="margin-left: 10px;">Documents</h2>
+            <p style="font-size: 17px; margin-left: 20px;">
+                The <b>'Documents'</b> tab displays all uploaded documents currently available for sensitivity review and analysis. The summary of entities and their
+                sensitivities is displayed to give an overview of a document's contents. By using the icon buttons in the right hand column you can view documents in detail,
+                or delete documents from the database. By using the search-bar in the top right of the tab you can filter documents by their filename. <br><br>
+                Selecting an individual document will present the document body and additional analysis alongside its contents. Entities within the document will be highlighted
+                with a colour corresponding to their predicted sensitivity. Hovering over an entity will present additional information about the entity to help with
+                understanding the context of its use within the document. Clicking on entities will redirect you to view the entity in more detail. Dynamic plots are featured
+                on the right-hand side of the document presenting the frequency of entities within the document as well as the distribution of predicted sensitivities.
 
-
-        <h1>Suggested Use</h1>
+            </p>
+            <h2 style="margin-left: 10px;">Entities</h2>
+            <p style="font-size: 17px; margin-left: 20px;">
+                Selecting the <b>'Entities'</b> tab allows for an inverted index view, for each entity a short overview of the documents it appears in is available.
+                The predicted sensitivity of each entity is displayed and colour coded to help with reviewing judgements. The right hand column features icons
+                that allow you to view an entity in more detail or delete the entity and its instances from the database. <br><br>
+                Selecting an individual entity will allow you to view entity abstracts, its predicted sensitivity as well as the other documents it appears in. The other documents it
+                appears in are available to be viewed in detail or deleted, if the number of documents exceeds the window size a scroll bar will be featured to assist in navigation.
+            </p>
+            <h2 style="margin-left: 10px;">Analytics</h2>
+            <p style="font-size: 17px; margin-left: 20px;">
+                The <b>'Analytics'</b> page offers extra insight into the overall trends of the documents uploaded, with the main feature of the analytics page being Latent Dirichlet Topic modelling.
+                LDA Topic Modelling clusters documents into a given number of topics (in this instance, eight topics), with each topic made up of related entities with weights corresponding
+                to the contribution they've made to make up the topic. The donut charts on display present related entities with corresponding related documents appearing on the right of
+                tab.
+            </p>
+        </div>
+        <br>
+        <p></p>
+        <br>
     </div>
 </body>
 </html>
