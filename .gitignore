@@ -3,5 +3,6 @@
 /src/django
 /src/venv
 /src/entity_django/venv
+/src/entity_django/ServerLog.txt
 /data
 db.sqlite3
