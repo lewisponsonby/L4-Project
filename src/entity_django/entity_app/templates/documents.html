@@ -65,7 +65,7 @@
     </div>
 
     <div class="wrapper" style="width: 35%; float: right; padding: 20px 20px 20px 20px; position: fixed; right: 150px">
-        <canvas id="barChart" style="width: 500px; max-height: 250px;"></canvas>
+        <canvas id="barChart" style="width: 500px; max-height: 250px; visibility: hidden;"></canvas>
 
         <script>
         var xValues = {{fig_ents|safe}};
@@ -102,7 +102,7 @@
         });
         </script>
 
-        <canvas id="pieChart" style="max-height: 250px;"></canvas>
+        <canvas id="pieChart" style="max-height: 250px; visibility: hidden;"></canvas>
         <script>
         var xValues = {{color_keys|safe}};
         var yValues = {{color_freqs|safe}};

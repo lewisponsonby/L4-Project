@@ -210,7 +210,6 @@ tr:nth-child(even) {
 
 .tooltip>div:nth-child(even):hover .tooltiptext {
     visibility: visible;
-    visibility: hidden;
     opacity: 1;
     z-index: 5;
 }
