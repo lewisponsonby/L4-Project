@@ -27,6 +27,8 @@ from datetime import datetime
 global LOG_ID
 LOG_ID="ServerLog.txt"
 
+
+
 def home(request): # Homepage
     with open(LOG_ID, "a+") as ServerLog:
         ServerLog.write(str(datetime.now())[:19]+" Home\n")

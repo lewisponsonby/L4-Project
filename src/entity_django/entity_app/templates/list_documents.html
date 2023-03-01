@@ -29,7 +29,7 @@
     }
     </script>
 </head>
-<bod>
+<body>
     <div class="topnav">
         <a class="title" href="">Sensitivity Detection Tool</a>
         <a href="/home">Home</a>
@@ -44,7 +44,9 @@
 
     <div class="main">
         <h1 style="display: inline;">View Documents</h1>
+        <!-- USER STUDY -->
         <input class="search" type="text" id="docInput" onkeyup="docSearch()" placeholder="Search documents...">
+
 
         <div class="wrapper" style="margin-top: 10px;">
         <table id="docTable" style="border-collapse: collapse; width: 100%; table-layout: fixed;">
@@ -63,6 +65,14 @@
                             <div>
                                 {{entity.text}}
                             </div>
+                            {% else %}
+                                <div style="border-radius: 7.5px; background-color: #dbdbdb; display: inline; padding: 0px 2px 0px 2px;" style="">
+                                      {{entity.text}}
+                                </div>
+                            {% endif %}
+                            
+                            {% comment %}
+                            <!--
                             {% elif entity.sensitivity == 1  %}
                             <div style="margin-right: 5px;" class="sensitivity1">
                                 {{entity.text}}
@@ -76,6 +86,8 @@
                                 {{entity.text}}
                             </div>
                             {% endif %}
+                            -->
+                            {% endcomment %}
                         {% endfor %}
                     </td>
 
