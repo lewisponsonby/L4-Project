@@ -44,16 +44,6 @@
                 {{ index|linebreaksbr }}
                 <span class="tooltiptext">{{ abstract }}</span>
             </div>
-
-            <!-- USER STUDY -->
-            {% else %}
-            <div style="display:inline;">
-                <span style="display:inline; font-weight: bold;" onclick="window.location.href='/view_entity/{{entid.slug}}'">{{ index|linebreaksbr }}</span>
-                <span class="tooltiptext" style="background-image: linear-gradient(to bottom, #255c00, #41a838);" href="aaaa"><h3>Low Sensitivity Risk</h3>{{ abstract }}</span>
-            </div>
-            {% endif %}
-
-            <!-- {% comment %} USER STUDY
             {% elif color == 1  %}
             <div class="sensitivity1">
                 <span onclick="window.location.href='/view_entity/{{entid.slug}}'">{{ index|linebreaksbr }}</span>
@@ -70,7 +60,6 @@
                 <span class="tooltiptext" style="background-image: linear-gradient(to bottom, #b50000, #de4c45);"><h3>High Sensitivity Risk</h3>{{ abstract }}</span>
             </div>
             {% endif %}
-            {% endcomment %} -->
             {% endfor %}
         </div>
     </div>
