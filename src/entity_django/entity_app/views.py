@@ -183,10 +183,10 @@ def view_document(request, docid): # View Individual Entity
     fig_freqs = [counter[inst_ent] for inst_ent in inst_ents ]
     color_dict = {1: 'green', 2: 'orange', 3: 'red'}
     colors = [color_dict[inst_entid.sensitivity] for inst_entid in inst_entids] # Create a list of sensitivities of the most common entities
-    if len(fig_freqs)>10:
-        fig_freqs=fig_freqs[:10]
-        colors=colors[:10]
-        inst_ents=inst_ents[:10]
+    #if len(fig_freqs)>10:
+     #   fig_freqs=fig_freqs[:10]
+      #  colors=colors[:10]
+       # inst_ents=inst_ents[:10]
 
     context = {
         'docid': docid,
