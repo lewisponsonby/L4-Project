@@ -48,8 +48,8 @@
             <!-- USER STUDY -->
             {% else %}
             <div style="display:inline;">
-                <span style="display:inline; font-weight: bold;" onclick="window.location.href='/view_entity/{{entid.slug}}'">{{ index|linebreaksbr }}</span>
-                <span class="tooltiptext" style="background-image: linear-gradient(to bottom, #255c00, #41a838);" href="aaaa"><h3>Low Sensitivity Risk</h3>{{ abstract }}</span>
+                <span style="border-radius: 7.5px; background-color: #dbdbdb; display: inline; padding: 0px 2px 0px 2px;" onclick="window.location.href='/view_entity/{{entid.slug}}'">{{ index|linebreaksbr }}</span>
+                <span class="tooltiptext" style="background-image: linear-gradient(to top, #dbdbdb, grey);" href="aaaa"><h3>Low Sensitivity Risk</h3>{{ abstract }}</span>
             </div>
             {% endif %}
 
