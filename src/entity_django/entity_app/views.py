@@ -183,10 +183,10 @@ def view_document(request, docid): # View Individual Entity
     fig_freqs = [counter[inst_ent] for inst_ent in inst_ents ]
     color_dict = {1: 'green', 2: 'orange', 3: 'red'}
     colors = [color_dict[inst_entid.sensitivity] for inst_entid in inst_entids] # Create a list of sensitivities of the most common entities
-    if len(fig_freqs)>10:
-        fig_freqs=fig_freqs[:10]
-        colors=colors[:10]
-        inst_ents=inst_ents[:10]
+    if len(fig_freqs)>30:
+        fig_freqs=fig_freqs[:30]
+        colors=colors[:30]
+        inst_ents=inst_ents[:30]
 
     context = {
         'docid': docid,
@@ -222,8 +222,8 @@ def corpus_analytics(request): # Corpus Analytics
             combined+=word.entityID.abstract+" "
         combined_topics.append(combined)
 
-        if len(topic_words)>7:
-            topic_words = topic_words[:7]
+        if len(topic_words)>20:
+            topic_words = topic_words[:20]
         colors=[]
         weights=[]
         names=[]
