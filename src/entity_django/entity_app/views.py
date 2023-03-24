@@ -147,7 +147,7 @@ def view_document(request, docid): # View Individual Entity
         entities.append(entity_name) # Record distinct entities
         colors[entity_name] = instance.entityID.sensitivity # and their sensitivities
 
-    counter = dict(Counter(entities)) # Record the most common entities ( top 7 )
+    counter = dict(Counter(entities)) # Record the most common entities
     color = [colors[key] for key in counter.keys()] # Create a list of sensitivities of the most common entities
     for i in range(len(color)):
         if color[i] == 1:
@@ -160,6 +160,8 @@ def view_document(request, docid): # View Individual Entity
             color[i] = 'red'
         ## Change sensitivities for colours
 
+
+    # Bar chart entity frequency calculations
     counter_ = dict(Counter(entities))
     color_ = [colors[key] for key in counter_.keys()]
     color_counter=dict(Counter(color_))
@@ -207,12 +209,17 @@ def corpus_analytics(request): # Corpus Analytics
         ServerLog.write(str(datetime.now())[:19]+" CorpusAnalytics\n")
 
     template = loader.get_template('corpus_analytics.html')
+
+    #If there are no topics, generate new topics
     if not TopicWord.objects.all():
         generateLDA()
     topics=[]
 
+    #Retrieve the maximum number of topics
     max_topics=TopicWord.objects.all().order_by('-topicNumber')[0].topicNumber
     combined_topics=[]
+
+    #For each topic, retrieve the topic words and topic docs
     for i in range(1,max_topics+1):
         topic_words=list(TopicWord.objects.filter(topicNumber=i).order_by('-weight'))
         topic_docs=list(TopicDocument.objects.filter(topicNumber=i).order_by('-weight'))
@@ -222,12 +229,14 @@ def corpus_analytics(request): # Corpus Analytics
             combined+=word.entityID.abstract+" "
         combined_topics.append(combined)
 
-        if len(topic_words)>20:
-            topic_words = topic_words[:20]
+        # Retrieve the top 8 words
+        if len(topic_words)>8:
+            topic_words = topic_words[:8]
         colors=[]
         weights=[]
         names=[]
         slugs=[]
+        #convert sensitivities to colours
         for word in topic_words:
             if word.entityID.sensitivity==1:
                 colors.append('green')
@@ -246,9 +255,10 @@ def corpus_analytics(request): # Corpus Analytics
         topics.append([topic_words,weights,colors,names,slugs])
         topics.append(topic_docs)
 
-
+    # Calculate the TF-IDF scores for the topic words
     tf_idf, count = c_tf_idf(combined_topics, m=len(combined_topics))
 
+    # Get the top 3 TF-IDF scoring words for each topic
     topic_titles = extract_top_n_words_per_topic(tf_idf, count, combined_topics, n=3)
 
     context = {
@@ -317,18 +327,18 @@ def analyse_document(document): # Analysing document for entities and creating i
 
     entities=entityTagger(document.text)
     documentID=document.documentID
-    for entity_instance in entities:
+    for entity_instance in entities: #For each entity instance, get its details
         URL=entity_instance[0]
         start=entity_instance[1]
         stop=entity_instance[2]
         all_URLs=Entity.objects.all().values_list('entityID', flat=True)
-        if URL not in all_URLs:
+        if URL not in all_URLs: # If entity does not exist in DB, create it
             abstract = getAbstract(URL)
             entity = Entity.objects.create(entityID=URL, abstract=abstract, text=URL.replace("http://dbpedia.org/resource/","").replace("_"," "), slug=URL.replace("http://dbpedia.org/resource/",""))
-            test_feature=fitted_vectorizer.transform([entity.abstract])
-            predicted=fitted_model.predict_proba(test_feature)
+            test_feature=fitted_vectorizer.transform([entity.abstract]) # Extract features from entity abstract
+            predicted=fitted_model.predict_proba(test_feature) # Predict entity sensitivity from abstract features
             print(entity.text,predicted)
-            if predicted[0][1]<0.4:
+            if predicted[0][1]<0.4: # Thresholds for sensitivity scoring
                 entity.sensitivity=1
             elif 0.4<=predicted[0][1]<0.8:
                 entity.sensitivity=2
@@ -383,20 +393,21 @@ def split_entities(docid,doc): # Splitting documents into entities for HTML disp
 
 def generateLDA(n_topics=8,n_words=5): # Regenerating LDA Topics
     TopicWord.objects.all().delete()
-    TopicDocument.objects.all().delete()
+    TopicDocument.objects.all().delete() # Delete existing topics and words
     tokens = []
-    docs = list(Document.objects.values_list('tokens', flat=True))
+    docs = list(Document.objects.values_list('tokens', flat=True)) # Get all documents
     for doc in docs:
         if doc != None:
             tokens.append(doc)
 
     jsonDec = json.decoder.JSONDecoder()
-    data_words = [jsonDec.decode(doc) for doc in tokens]
+    data_words = [jsonDec.decode(doc) for doc in tokens] # Get tokens from corpus
 
-    id2word = corpora.Dictionary(data_words)
+    id2word = corpora.Dictionary(data_words) # Convert tokens to ids
 
-    corpus = [id2word.doc2bow(text) for text in data_words]
+    corpus = [id2word.doc2bow(text) for text in data_words] # Create bag of words
 
+    # Generate LDA model
     lda_model = gensim.models.ldamodel.LdaModel(corpus=corpus,
                                                id2word=id2word,
                                                num_topics=n_topics,
@@ -407,8 +418,10 @@ def generateLDA(n_topics=8,n_words=5): # Regenerating LDA Topics
                                                iterations=300,
                                                per_word_topics=True)
 
+    # Output LDA topics
     topics = lda_model.show_topics(num_topics=n_topics, num_words=50, formatted=True)
 
+    # For each topic string, reformat it into variables
     for index, topic in enumerate(topics):
         topic_split=topic[1].split("+")
         for topic_word in topic_split:
@@ -428,11 +441,13 @@ def generateLDA(n_topics=8,n_words=5): # Regenerating LDA Topics
     lda_model.print_topics()
     docs_per_topic = [[] for _ in all_topics]
 
+    # Get topic words
     for doc_id, doc_bow in enumerate(corpus):
         doc_topics = lda_model.get_document_topics(doc_bow)
         for topic_id, score in doc_topics:
             docs_per_topic[topic_id].append((doc_id, score))
 
+    # Get top scoring documents
     for doc_list in docs_per_topic:
         doc_list.sort(key=lambda id_and_score: id_and_score[1], reverse=True)
 
